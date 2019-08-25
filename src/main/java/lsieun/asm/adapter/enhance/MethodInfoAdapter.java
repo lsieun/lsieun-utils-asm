@@ -1,19 +1,14 @@
-package lsieun.asm.adapter.info;
-
-import static org.objectweb.asm.Opcodes.ACC_ABSTRACT;
+package lsieun.asm.adapter.enhance;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.AdviceAdapter;
 
-import lsieun.asm.adapter.RegexAdapter;
+import lsieun.asm.adapter.MethodEnhancedAdapter;
 import lsieun.asm.cst.Constant;
 import lsieun.asm.utils.CodeUtils;
-import lsieun.asm.utils.NameUtils;
-import lsieun.utils.RegexUtils;
 
-public class MethodInfoAdapter extends RegexAdapter {
-    private static int display_order = 0;
+public class MethodInfoAdapter extends MethodEnhancedAdapter {
 
     // 开始前，传入参数
     private boolean showMethodName;
@@ -30,31 +25,8 @@ public class MethodInfoAdapter extends RegexAdapter {
     }
 
     @Override
-    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
-
-        // （1） 接口，不处理
-        if (isInterface) return mv;
-
-        //（2）抽象方法，不处理
-        boolean isAbstractMethod = (access & ACC_ABSTRACT) != 0;
-        if (isAbstractMethod) return mv;
-
-        // （3）方法名和描述符不符合要求，不处理。
-        String name_desc = String.format("%s:%s", name, descriptor);
-        if (!RegexUtils.matches(name_desc, regex_array)) return mv;
-
-        // （4）条件符合了，可以进行处理了
-        gotcha = true;
-        if (!hasPrintClassName) {
-            display_order++;
-            System.out.println(String.format("%s(%s-MethodInfoAdapter)%s: %s", System.lineSeparator(), display_order,"ClassName", NameUtils.getFQCN(internalName)));
-            hasPrintClassName = true;
-        }
-        System.out.println(String.format("method: %s:%s", name, descriptor));
-        mv = new MethodInfoVisitor(mv, access, name, descriptor);
-
-        return mv;
+    protected MethodVisitor enhanceMethodVisitor(MethodVisitor mv, int access, String name, String descriptor, String signature, String[] exceptions) {
+        return new MethodInfoVisitor(mv, access, name, descriptor);
     }
 
     class MethodInfoVisitor extends AdviceAdapter {

@@ -29,6 +29,7 @@ public class RegexAdapter extends ClassVisitor {
         internalName = name;
         hasPrintClassName = false;
         isInterface = (access & ACC_INTERFACE) != 0;
+        gotcha = false;
 
         // 再处理别人的逻辑
         super.visit(version, access, name, signature, superName, interfaces);

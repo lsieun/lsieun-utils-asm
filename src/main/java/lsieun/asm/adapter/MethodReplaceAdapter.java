@@ -1,4 +1,4 @@
-package lsieun.asm.adapter.replace;
+package lsieun.asm.adapter;
 
 
 import static org.objectweb.asm.Opcodes.*;
@@ -7,15 +7,21 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import lsieun.asm.adapter.RegexAdapter;
 import lsieun.asm.utils.NameUtils;
 import lsieun.utils.RegexUtils;
 
-public class MethodReplacer extends RegexAdapter {
+public class MethodReplaceAdapter extends RegexAdapter {
     private static int display_order = 0;
 
-    public MethodReplacer(ClassVisitor classVisitor, String[] regex_array) {
+    private boolean keepOldMethod;
+
+    public MethodReplaceAdapter(ClassVisitor classVisitor, String[] regex_array) {
         super(classVisitor, regex_array);
+    }
+
+    public MethodReplaceAdapter(ClassVisitor classVisitor, String[] regex_array, boolean keepOldMethod) {
+        super(classVisitor, regex_array);
+        this.keepOldMethod = keepOldMethod;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class MethodReplacer extends RegexAdapter {
         gotcha = true;
         if (!hasPrintClassName) {
             display_order++;
-            System.out.println(String.format("%s(%s-MethodReplacer)%s: %s", System.lineSeparator(), display_order,"ClassName", NameUtils.getFQCN(internalName)));
+            System.out.println(String.format("%s(%s-MethodReplaceAdapter)%s: %s", System.lineSeparator(), display_order,"ClassName", NameUtils.getFQCN(internalName)));
             hasPrintClassName = true;
         }
         System.out.println(String.format("method: %s:%s", name, descriptor));
@@ -49,7 +55,13 @@ public class MethodReplacer extends RegexAdapter {
         String newName = getNewName(name);
         generateNewBody(access, name, descriptor, signature, exceptions);
 
-        return super.visitMethod(access, newName, descriptor, signature, exceptions);
+        if (keepOldMethod) {
+            return super.visitMethod(access, newName, descriptor, signature, exceptions);
+        }
+        else {
+            return null;
+        }
+
     }
 
     private final void generateNewBody(int access, String name, String descriptor, String signature, String[] exceptions) {
