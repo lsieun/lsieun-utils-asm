@@ -16,8 +16,8 @@ import lsieun.asm.utils.OpcodeUtils;
 
 public class MethodOpcodeAdapter extends MethodEnhancedAdapter {
 
-    public MethodOpcodeAdapter(ClassVisitor classVisitor, String[] regex_array) {
-        super(classVisitor, regex_array);
+    public MethodOpcodeAdapter(ClassVisitor classVisitor, String[] includes, String[] excludes) {
+        super(classVisitor, includes, excludes);
     }
 
     @Override

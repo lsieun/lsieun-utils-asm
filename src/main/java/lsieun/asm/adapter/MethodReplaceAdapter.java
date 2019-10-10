@@ -1,26 +1,21 @@
 package lsieun.asm.adapter;
 
 
-import static org.objectweb.asm.Opcodes.*;
-
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import lsieun.asm.utils.NameUtils;
-import lsieun.utils.RegexUtils;
+import static org.objectweb.asm.Opcodes.*;
 
 public class MethodReplaceAdapter extends RegexAdapter {
-    private static int display_order = 0;
-
     private boolean keepOldMethod;
 
-    public MethodReplaceAdapter(ClassVisitor classVisitor, String[] regex_array) {
-        super(classVisitor, regex_array);
+    public MethodReplaceAdapter(ClassVisitor classVisitor, String[] includes, String[] excludes) {
+        this(classVisitor, includes, excludes, false);
     }
 
-    public MethodReplaceAdapter(ClassVisitor classVisitor, String[] regex_array, boolean keepOldMethod) {
-        super(classVisitor, regex_array);
+    public MethodReplaceAdapter(ClassVisitor classVisitor, String[] includes, String[] excludes, boolean keepOldMethod) {
+        super(classVisitor, includes, excludes);
         this.keepOldMethod = keepOldMethod;
     }
 
@@ -37,21 +32,13 @@ public class MethodReplaceAdapter extends RegexAdapter {
             return super.visitMethod(access, name, descriptor, signature, exceptions);
         }
 
-        // （3）方法名和描述符不符合要求，不处理。
-        String name_desc = String.format("%s:%s", name, descriptor);
-        if (!RegexUtils.matches(name_desc, regex_array)) {
+        //（3）不符合正则表达式，不处理
+        boolean isTargetMethod = isTargetMember(name, descriptor);
+        if (!isTargetMethod) {
             return super.visitMethod(access, name, descriptor, signature, exceptions);
         }
 
-        // （4）条件符合了，可以进行处理了
-        gotcha = true;
-        if (!hasPrintClassName) {
-            display_order++;
-            System.out.println(String.format("%s(%s-MethodReplaceAdapter)%s: %s", System.lineSeparator(), display_order,"ClassName", NameUtils.getFQCN(internalName)));
-            hasPrintClassName = true;
-        }
-        System.out.println(String.format("method: %s:%s", name, descriptor));
-
+        //（4）开始处理
         String newName = getNewName(name);
         generateNewBody(access, name, descriptor, signature, exceptions);
 

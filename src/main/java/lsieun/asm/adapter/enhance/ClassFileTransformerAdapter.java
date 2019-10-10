@@ -13,7 +13,7 @@ public class ClassFileTransformerAdapter extends MethodEnhancedAdapter {
     public ClassFileTransformerAdapter(ClassVisitor classVisitor, String containerName) {
         super(classVisitor, new String[] {
                 "^transform:\\(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;\\[B\\)\\[B$",
-        });
+        }, null);
         this.containerName = containerName;
     }
 

@@ -16,8 +16,16 @@ public class MethodInfoAdapter extends MethodEnhancedAdapter {
     private boolean showMethodReturnValue;
     private boolean showStackTrace;
 
-    public MethodInfoAdapter(ClassVisitor classVisitor, String[] regex_array, boolean showMethodName, boolean showMethodArgs, boolean showMethodReturnValue, boolean showStackTrace) {
-        super(classVisitor, regex_array);
+    public MethodInfoAdapter(ClassVisitor classVisitor, String[] includes, String[] excludes) {
+        this(classVisitor, includes, excludes, true, true, true, true);
+    }
+
+    public MethodInfoAdapter(ClassVisitor classVisitor, String[] includes, String[] excludes,
+                             boolean showMethodName,
+                             boolean showMethodArgs,
+                             boolean showMethodReturnValue,
+                             boolean showStackTrace) {
+        super(classVisitor, includes, excludes);
         this.showMethodName = showMethodName;
         this.showMethodArgs = showMethodArgs;
         this.showMethodReturnValue = showMethodReturnValue;
