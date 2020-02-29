@@ -41,7 +41,7 @@ public class OpcodeUtils {
 
     public static void printType(MethodVisitor mv, Type t) {
         if (t.getSort() == Type.VOID) {
-            CodeUtils.printMessage(mv, "method OK");
+            CodeUtils.printMessage(mv, "method return OK: Void (from lsieun-utils-asm)");
             return;
         } else if (t.getSort() >= Type.BOOLEAN && t.getSort() <= Type.OBJECT) {
             String format = "Value(%s): %s";

@@ -2,7 +2,6 @@ package lsieun.asm.adapter;
 
 import lsieun.asm.adapter.find.Result;
 import lsieun.asm.cst.Constant;
-import lsieun.asm.utils.NameUtils;
 import lsieun.utils.RegexUtils;
 import org.objectweb.asm.ClassVisitor;
 
