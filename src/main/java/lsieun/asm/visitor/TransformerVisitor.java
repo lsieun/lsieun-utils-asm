@@ -1,31 +1,33 @@
-package lsieun.asm.adapter.enhance;
+package lsieun.asm.visitor;
 
+import lsieun.asm.cst.Constant;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.AdviceAdapter;
 
-import lsieun.asm.adapter.MethodEnhancedAdapter;
-import lsieun.asm.cst.Constant;
-
-public class ClassFileTransformerAdapter extends MethodEnhancedAdapter {
+public class TransformerVisitor extends ClassVisitor {
     private String containerName;
 
-    public ClassFileTransformerAdapter(ClassVisitor classVisitor, String containerName) {
-        super(classVisitor, new String[] {
-                "^transform:\\(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;\\[B\\)\\[B$",
-        }, null);
+    public TransformerVisitor(ClassVisitor cv, String containerName) {
+        super(Constant.API_VERSION, cv);
         this.containerName = containerName;
     }
 
     @Override
-    protected MethodVisitor enhanceMethodVisitor(MethodVisitor mv, int access, String name, String descriptor, String signature, String[] exceptions) {
-        return new ClassFileTransformerVisitor(mv, access, name, descriptor);
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+        if (mv != null &&
+                name.equals("transform") &&
+                descriptor.equals("(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B")) {
+            mv = new TransformerAdapter(mv, access, name, descriptor);
+        }
+        return mv;
     }
 
-    class ClassFileTransformerVisitor extends AdviceAdapter {
+    class TransformerAdapter extends AdviceAdapter {
 
-        public ClassFileTransformerVisitor(MethodVisitor methodVisitor, int access, String name, String descriptor) {
-            super(Constant.API_VERSION, methodVisitor, access, name, descriptor);
+        public TransformerAdapter(MethodVisitor mv, int access, String name, String descriptor) {
+            super(Constant.API_VERSION, mv, access, name, descriptor);
         }
 
         @Override

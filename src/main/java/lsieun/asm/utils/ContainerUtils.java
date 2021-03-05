@@ -11,7 +11,7 @@ public class ContainerUtils {
 
     public static byte[] copy(byte[] bytes) {
         byte[] new_bytes = new byte[bytes.length];
-        for (int i=0; i<bytes.length; i++) {
+        for (int i = 0; i < bytes.length; i++) {
             new_bytes[i] = bytes[i];
         }
         return new_bytes;
@@ -40,7 +40,6 @@ public class ContainerUtils {
     }
 
 
-
     public String internalName;
     public byte[] before_bytes;
     public byte[] after_bytes;
@@ -58,8 +57,8 @@ public class ContainerUtils {
         if (equals) return;
 
         if (Integer.valueOf(before_bytes.length).equals(Integer.valueOf(after_bytes.length))) return;
-        System.out.println("a.length = " +before_bytes.length);
-        System.out.println("b.length = " +after_bytes.length);
+        System.out.println("a.length = " + before_bytes.length);
+        System.out.println("b.length = " + after_bytes.length);
 
         String className = internalName.replace("/", ".");
         String filepath_a = String.format("%s/%s-a.class", dir, className);
@@ -75,12 +74,12 @@ public class ContainerUtils {
     public static void writeBytes(String filename, byte[] bytes) {
         File file = new File(filename);
         File dir = file.getParentFile();
-        if(!dir.exists()) {
+        if (!dir.exists()) {
             dir.mkdirs();
         }
 
         try (OutputStream out = new FileOutputStream(filename);
-             BufferedOutputStream buff = new BufferedOutputStream(out);){
+             BufferedOutputStream buff = new BufferedOutputStream(out);) {
             buff.write(bytes);
             buff.flush();
 
