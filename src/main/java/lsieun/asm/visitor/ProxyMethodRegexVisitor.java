@@ -96,7 +96,9 @@ public class ProxyMethodRegexVisitor extends ClassRegexVisitor {
         }
         int stackSize = returnType.getSize();
 
-        // (3) visitMaxs and visitEnd
+        // (3) return, visitMaxs and visitEnd
+        int opcode = returnType.getOpcode(IRETURN);
+        mv.visitInsn(opcode);
         mv.visitMaxs(stackSize, localSize);
         mv.visitEnd();
     }

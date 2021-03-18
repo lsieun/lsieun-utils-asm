@@ -7,12 +7,12 @@ public class FindInterfaceRegexVisitor extends ClassRegexVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        if (interfaces == null) return;
+        if (interfaces == null || interfaces.length == 0) return;
         for (String item : interfaces) {
             boolean flag = isAppropriate(item);
             if (flag) {
-                if (!resultList.contains(item)) {
-                    resultList.add(item);
+                if (!resultList.contains(name)) {
+                    resultList.add(name);
                 }
             }
         }

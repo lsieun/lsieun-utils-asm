@@ -1,23 +1,29 @@
 package lsieun.asm.visitor;
 
 import lsieun.asm.cst.Constant;
+import lsieun.asm.utils.PrintUtils;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 public class PrintMethodAdapter extends MethodVisitor implements Opcodes {
+    private static final String INTERNAL_NAME = PrintUtils.class.getName().replace('.', '/');
+
     public PrintMethodAdapter(MethodVisitor methodVisitor) {
         super(Constant.API_VERSION, methodVisitor);
     }
 
     protected void printMessage(String str) {
         super.visitLdcInsn(str);
-        super.visitMethodInsn(INVOKESTATIC, "lsieun/asm/utils/PrintUtils", "printText", "(Ljava/lang/String;)V", false);
+        super.visitMethodInsn(INVOKESTATIC, INTERNAL_NAME, "printText", "(Ljava/lang/String;)V", false);
     }
 
-    protected void dupAndPrintValueOnStack(Type t) {
-        dup(t);
-        printValueOnStack(t);
+    protected void printValueOnStack(String descriptor) {
+        super.visitMethodInsn(INVOKESTATIC, INTERNAL_NAME, "printValueOnStack", descriptor, false);
+    }
+
+    protected void printStackTrace() {
+        super.visitMethodInsn(INVOKESTATIC, INTERNAL_NAME, "printStackTrace", "()V", false);
     }
 
     protected void dup(Type t) {
@@ -46,14 +52,10 @@ public class PrintMethodAdapter extends MethodVisitor implements Opcodes {
         else {
             printValueOnStack("(Ljava/lang/Object;)V");
         }
-
     }
 
-    protected void printValueOnStack(String descriptor) {
-        super.visitMethodInsn(INVOKESTATIC, "lsieun/asm/utils/PrintUtils", "printValueOnStack", descriptor, false);
-    }
-
-    protected void printStackTrace() {
-        super.visitMethodInsn(INVOKESTATIC, "lsieun/asm/utils/PrintUtils", "printStackTrace", "()V", false);
+    protected void dupAndPrintValueOnStack(Type t) {
+        dup(t);
+        printValueOnStack(t);
     }
 }

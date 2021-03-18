@@ -1,35 +1,63 @@
 package lsieun.asm.utils;
 
+import lsieun.asm.visitor.*;
+import lsieun.utils.RegexUtils;
+import lsieun.utils.archive.JarUtils;
+import org.objectweb.asm.ClassReader;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import lsieun.asm.visitor.ClassRegexVisitor;
-import lsieun.asm.visitor.FindFieldRegexVisitor;
-import lsieun.asm.visitor.FindInterfaceRegexVisitor;
-import lsieun.asm.visitor.FindMethodRegexVisitor;
-import lsieun.asm.visitor.FindSuperRegexVisitor;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-
-import lsieun.utils.RegexUtils;
-import lsieun.utils.archive.JarUtils;
-
 public class FindUtils {
+    private static final int PARSING_OPTIONS = ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
 
-//    public static List<String> findInterface(String jar_path, String[] path_regex_array, String[] interface_name_regex_array) {
-//        FindInterfaceRegexVisitor cv = new FindInterfaceRegexVisitor(interface_name_regex_array, null);
-//        return find(jar_path, path_regex_array, cv);
-//    }
-//
-//    public static List<String> findSuper(String jar_path, String[] path_regex_array, String[] super_name_regex_array) {
-//        FindSuperRegexVisitor cv = new FindSuperRegexVisitor(super_name_regex_array);
-//        return find(jar_path, path_regex_array, cv);
-//    }
-//
-//    public static List<String> findField(String jar_path, String[] path_regex_array, String[] includes, String[] excludes) {
-//        FindFieldRegexVisitor cv = new FindFieldRegexVisitor(includes, excludes);
-//        return find(jar_path, path_regex_array, cv);
-//    }
+    private static List<String> filter(String jar_path, String[] path_regex_array) {
+        List<String> list = JarUtils.getClassEntries(jar_path);
+        RegexUtils.filter(list, path_regex_array);
+        return list;
+    }
+
+    public static List<String> findInterface(String jar_path, String[] path_regex_array, String[] interface_name_regex_array) {
+        List<String> list = filter(jar_path, path_regex_array);
+
+        List<String> resultList = new ArrayList<>();
+        for (String item : list) {
+            byte[] bytes = JarUtils.readClass(jar_path, item);
+            ClassReader cr = new ClassReader(bytes);
+            ClassRegexVisitor cv = new FindInterfaceRegexVisitor(interface_name_regex_array, null);
+            cr.accept(cv, PARSING_OPTIONS);
+            resultList.addAll(cv.resultList);
+        }
+        return resultList;
+    }
+
+    public static List<String> findSuper(String jar_path, String[] path_regex_array, String[] super_name_regex_array) {
+        List<String> list = filter(jar_path, path_regex_array);
+
+        List<String> resultList = new ArrayList<>();
+        for (String item : list) {
+            byte[] bytes = JarUtils.readClass(jar_path, item);
+            ClassReader cr = new ClassReader(bytes);
+            ClassRegexVisitor cv = new FindSuperRegexVisitor(super_name_regex_array);
+            cr.accept(cv, PARSING_OPTIONS);
+            resultList.addAll(cv.resultList);
+        }
+        return resultList;
+    }
+
+    public static List<String> findField(String jar_path, String[] path_regex_array, String[] includes, String[] excludes) {
+        List<String> list = filter(jar_path, path_regex_array);
+
+        List<String> resultList = new ArrayList<>();
+        for (String item : list) {
+            byte[] bytes = JarUtils.readClass(jar_path, item);
+            ClassReader cr = new ClassReader(bytes);
+            ClassRegexVisitor cv = new FindFieldRegexVisitor(includes, excludes);
+            cr.accept(cv, PARSING_OPTIONS);
+            resultList.addAll(cv.resultList);
+        }
+        return resultList;
+    }
 
     /**
      * <b>path_regex_array</b>示例如下：
@@ -45,64 +73,56 @@ public class FindUtils {
      * <b></b>
      *
      * @param path_regex_array path regex
-     * @param includes
-     * @param excludes
+     * @param includes 包含哪些方法
+     * @param excludes 不包含哪些方法
      */
-//    public static List<String> findMethod(String jar_path, String[] path_regex_array, String[] includes, String[] excludes) {
-//        FindMethodRegexVisitor cv = new FindMethodRegexVisitor(includes, excludes);
-//        return find(jar_path, path_regex_array, cv);
-//    }
+    public static List<String> findMethod(String jar_path, String[] path_regex_array, String[] includes, String[] excludes) {
+        List<String> list = filter(jar_path, path_regex_array);
 
-//    public static List<String> find(String jar_path, String[] path_regex_array, ClassVisitor cv) {
-//        List<String> list = JarUtils.getClassEntries(jar_path);
-//        RegexUtils.filter(list, path_regex_array);
-//
-//        List<String> resultList = new ArrayList<>();
-//
-//        for (String str : list) {
-//            byte[] bytes = JarUtils.readClass(jar_path, str);
-//            ClassReader cr = new ClassReader(bytes);
-//            cr.accept(cv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-//            if (cv instanceof ClassRegexVisitor) {
-//                ClassRegexVisitor ra = (ClassRegexVisitor) cv;
-//                if (ra.gotcha) {
-//                    resultList.add(ra.result);
-//                }
-//            }
-//        }
-//        return resultList;
-//    }
+        List<String> resultList = new ArrayList<>();
+        for (String item : list) {
+            byte[] bytes = JarUtils.readClass(jar_path, item);
+            ClassReader cr = new ClassReader(bytes);
+            ClassRegexVisitor cv = new FindMethodRegexVisitor(includes, excludes);
+            cr.accept(cv, PARSING_OPTIONS);
+            resultList.addAll(cv.resultList);
+        }
+        return resultList;
+    }
 
-//    public static List<String> findOpcode(String jar_path, String[] path_regex_array, ClassVisitor cv) {
-//        List<String> list = JarUtils.getClassEntries(jar_path);
-//        RegexUtils.filter(list, path_regex_array);
-//
-//        List<String> resultList = new ArrayList<>();
-//
-//        for (String str : list) {
-//            byte[] bytes = JarUtils.readClass(jar_path, str);
-//            ClassReader cr = new ClassReader(bytes);
-//            cr.accept(cv, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-//            if (cv instanceof ClassRegexVisitor) {
-//                ClassRegexVisitor ra = (ClassRegexVisitor) cv;
-//                if (ra.gotcha) {
-//                    resultList.add(ra.result);
-//                }
-//            }
-//        }
-//        return resultList;
-//    }
+    public static List<String> findMethodRef(String jar_path, String[] path_regex_array,
+                                             String refClassName, String[] includes, String[] excludes) {
+        List<String> list = filter(jar_path, path_regex_array);
 
-//    public static void displayResult(List<String> resultList) {
-//        if (resultList == null || resultList.size() < 1) return;
-//
-//        for (int i = 0; i < resultList.size(); i++) {
-//            Result result = resultList.get(i);
-//            System.out.println(String.format("(%s)ClassName: %s", (i + 1), result.className));
-//            for (Result.NameAndDesc item : result.list) {
-//                System.out.println(String.format("%s: %s", item.name, item.desc));
-//            }
-//            System.out.println();
-//        }
-//    }
+        List<String> resultList = new ArrayList<>();
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+
+        for (String str : list) {
+            byte[] bytes = JarUtils.readClass(jar_path, str);
+            ClassReader cr = new ClassReader(bytes);
+            FindMethodRefRegexVisitor cv = new FindMethodRefRegexVisitor(refClassName, includes, excludes);
+            cr.accept(cv, parsingOptions);
+            resultList.addAll(cv.resultList);
+        }
+        return resultList;
+    }
+
+    public static void displayResult(List<String> resultList) {
+        if (resultList == null || resultList.size() < 1) return;
+
+        for (int i = 0; i < resultList.size(); i++) {
+            String result = resultList.get(i);
+            System.out.println(String.format("(%s)ClassName: %s", (i + 1), result));
+        }
+    }
+
+    public static void main(String[] args) {
+        String jar_path = "D:/tmp/target.jar";
+        List<String> list = findInterface(jar_path, new String[]{
+                "^\\w+_you/.*\\.class$"
+        }, new String[]{
+                "^java/lang/instrument/ClassFileTransformer$"
+        });
+        displayResult(list);
+    }
 }

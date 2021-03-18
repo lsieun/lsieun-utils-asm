@@ -24,7 +24,7 @@ public class TransformerVisitor extends ClassVisitor {
         return mv;
     }
 
-    class TransformerAdapter extends AdviceAdapter {
+    private class TransformerAdapter extends AdviceAdapter {
 
         public TransformerAdapter(MethodVisitor mv, int access, String name, String descriptor) {
             super(Constant.API_VERSION, mv, access, name, descriptor);

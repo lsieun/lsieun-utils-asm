@@ -17,9 +17,8 @@ public class FindMethodRefVisitor extends ClassVisitor {
     private String currentClassName;
 
 
-    public FindMethodRefVisitor(ClassVisitor classVisitor,
-                                String refClassName, String refMethodName, String refMethodDesc) {
-        super(Constant.API_VERSION, classVisitor);
+    public FindMethodRefVisitor(String refClassName, String refMethodName, String refMethodDesc) {
+        super(Constant.API_VERSION, null);
         this.refClassName = refClassName;
         this.refMethodName = refMethodName;
         this.refMethodDesc = refMethodDesc;

@@ -64,6 +64,6 @@ public class PrintUtils {
 
     public static void printStackTrace() {
         Exception ex = new Exception();
-        ex.printStackTrace();
+        ex.printStackTrace(System.out);
     }
 }

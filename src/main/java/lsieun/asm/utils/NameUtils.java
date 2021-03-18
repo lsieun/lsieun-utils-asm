@@ -1,17 +1,15 @@
 package lsieun.asm.utils;
 
 public class NameUtils {
-
-    public static String getInternalName(String fqcn) {
-        return fqcn.replace(".", "/");
+    public static String toInternalName(String fully_qualified_class_name) {
+        return fully_qualified_class_name.replace('.', '/');
     }
 
-    public static String getJarItemName(String fqcn) {
-        return String.format("%s.class", getInternalName(fqcn));
+    public static String toJarItemName(String internalName) {
+        return String.format("%s.class", internalName);
     }
 
-    public static String getFQCN(String internalName) {
-        return internalName.replace("/", ".");
+    public static String toFullyQualifiedClassName(String internalName) {
+        return internalName.replace('/', '.');
     }
-
 }
