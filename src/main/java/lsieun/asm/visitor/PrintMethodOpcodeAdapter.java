@@ -168,7 +168,9 @@ public class PrintMethodOpcodeAdapter extends PrintMethodAdapter {
 
         Type methodType = Type.getMethodType(descriptor);
         Type returnType = methodType.getReturnType();
-        dupAndPrintValueOnStack(returnType);
+        if (!returnType.equals(Type.VOID_TYPE)) {
+            dupAndPrintValueOnStack(returnType);
+        }
     }
 
     @Override
