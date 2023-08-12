@@ -24,8 +24,13 @@ public class ClassRegexVisitor extends ClassVisitor implements Opcodes {
     }
 
     public boolean isAppropriate(String item) {
-        if (RegexUtils.matches(item, excludes, false)) return false;
+        if (RegexUtils.matches(item, excludes, false)) {
+            return false;
+        }
         return RegexUtils.matches(item, includes, true);
     }
 
+    protected String getMethodDescInfo(String methodName, String methodDesc) {
+        return String.format("%s%s%s", methodName, Constant.COLON, methodDesc);
+    }
 }

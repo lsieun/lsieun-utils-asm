@@ -5,7 +5,8 @@ public class NameUtils {
         return fully_qualified_class_name.replace('.', '/');
     }
 
-    public static String toJarItemName(String internalName) {
+    public static String toJarItemName(String fully_qualified_class_name) {
+        String internalName = toInternalName(fully_qualified_class_name);
         return String.format("%s.class", internalName);
     }
 

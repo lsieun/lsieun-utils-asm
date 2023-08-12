@@ -10,7 +10,7 @@ public class FindMethodInvokeRegexVisitor extends ClassRegexVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        String name_desc = String.format("%s%s%s", name, Constant.COLON, descriptor);
+        String name_desc = getMethodDescInfo(name, descriptor);
         boolean flag = isAppropriate(name_desc);
         if (flag) {
             return new FindMethodInvokeRegexAdapter();

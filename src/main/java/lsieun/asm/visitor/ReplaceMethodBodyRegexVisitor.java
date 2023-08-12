@@ -1,6 +1,5 @@
 package lsieun.asm.visitor;
 
-import lsieun.asm.cst.Constant;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -32,7 +31,7 @@ public class ReplaceMethodBodyRegexVisitor extends ClassRegexVisitor {
 
 
         // （2）如果符合正则表达式，则进行处理
-        String name_desc = String.format("%s%s%s", name, Constant.COLON, descriptor);
+        String name_desc = getMethodDescInfo(name, descriptor);
         boolean flag = isAppropriate(name_desc);
         if (flag) {
             generateNewBody(mv, owner, access, name, descriptor, signature, exceptions);

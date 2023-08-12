@@ -38,7 +38,7 @@ public class FindMethodRefRegexVisitor extends ClassRegexVisitor {
 
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-            String name_desc = String.format("%s%s%s", name, Constant.COLON, descriptor);
+            String name_desc = getMethodDescInfo(name, descriptor);
             if (owner.equals(refClassName) && isAppropriate(name_desc)) {
                 String item = String.format("%s.class %s:%s", currentClassName, currentMethodName, currentMethodDesc);
                 if (!resultList.contains(item)) {

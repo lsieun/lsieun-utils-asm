@@ -1,16 +1,16 @@
 package lsieun.asm.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.util.ASMifier;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceClassVisitor;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 
 public class ASMPrint {
     private static final int INPUT_STREAM_DATA_CHUNK_SIZE = 4096;
@@ -26,7 +26,8 @@ public class ASMPrint {
             InputStream in = ClassLoader.getSystemResourceAsStream(classFilePath);
             byte[] bytes = readStream(in, true);
             generate(bytes, parsingOptions, asmCode);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -43,7 +44,8 @@ public class ASMPrint {
             }
             outputStream.flush();
             return outputStream.toByteArray();
-        } finally {
+        }
+        finally {
             if (close) {
                 inputStream.close();
             }
