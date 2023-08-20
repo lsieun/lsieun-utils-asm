@@ -1,6 +1,7 @@
 package lsieun.asm.visitor;
 
 import lsieun.asm.cst.Constant;
+import lsieun.asm.search.SearchItem;
 import lsieun.utils.RegexUtils;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -16,7 +17,7 @@ public class ClassRegexVisitor extends ClassVisitor implements Opcodes {
     public final String[] excludes;
 
     // 结束后，输出的数据
-    public final List<String> resultList = new ArrayList<>();
+    public final List<SearchItem> resultList = new ArrayList<>();
 
 
     public ClassRegexVisitor(ClassVisitor cv, String[] includes, String[] excludes) {
@@ -32,8 +33,14 @@ public class ClassRegexVisitor extends ClassVisitor implements Opcodes {
         return RegexUtils.matches(item, includes, true);
     }
 
-    protected String getMethodDescInfo(String methodName, String methodDesc) {
-        return String.format("%s%s%s", methodName, Constant.COLON, methodDesc);
+    public void addResult(SearchItem item) {
+        if (item == null) {
+            return;
+        }
+
+        if (!resultList.contains(item)) {
+            resultList.add(item);
+        }
     }
 
     protected void printMethodParameters(MethodVisitor mv, int access, String name, String desc, String signature, String[] exceptions) {

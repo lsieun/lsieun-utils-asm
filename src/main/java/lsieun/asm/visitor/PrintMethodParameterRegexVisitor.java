@@ -4,6 +4,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
+import static lsieun.asm.utils.ASMStringUtils.getClassMemberInfo;
+
 public class PrintMethodParameterRegexVisitor extends ClassRegexVisitor {
     // 开始前，传入的参数
     private final boolean showMethodReturnValue;
@@ -45,7 +47,7 @@ public class PrintMethodParameterRegexVisitor extends ClassRegexVisitor {
 
 
         // （2）如果符合正则表达式，则进行处理
-        String name_desc = getMethodDescInfo(name, descriptor);
+        String name_desc = getClassMemberInfo(name, descriptor);
         boolean flag = isAppropriate(name_desc);
         if (flag) {
             mv = new PrintMethodParameterRegexAdapter(mv, access, name, descriptor);

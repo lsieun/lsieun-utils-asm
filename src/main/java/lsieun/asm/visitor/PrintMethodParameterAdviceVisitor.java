@@ -6,6 +6,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 
+import static lsieun.asm.utils.ASMStringUtils.getClassMemberInfo;
+
 public class PrintMethodParameterAdviceVisitor extends ClassRegexVisitor {
 
     // 开始前，传入的参数
@@ -49,7 +51,7 @@ public class PrintMethodParameterAdviceVisitor extends ClassRegexVisitor {
 
 
         // （2）如果符合正则表达式，则进行处理
-        String name_desc = getMethodDescInfo(name, descriptor);
+        String name_desc = getClassMemberInfo(name, descriptor);
         boolean flag = isAppropriate(name_desc);
         if (flag) {
             mv = new PrintInitMethodParameterAdviceAdapter(mv, access, name, descriptor);

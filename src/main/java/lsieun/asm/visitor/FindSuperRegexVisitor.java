@@ -1,5 +1,7 @@
 package lsieun.asm.visitor;
 
+import lsieun.asm.search.SearchItem;
+
 public class FindSuperRegexVisitor extends ClassRegexVisitor {
 
     public FindSuperRegexVisitor(String[] includes) {
@@ -10,9 +12,8 @@ public class FindSuperRegexVisitor extends ClassRegexVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         boolean flag = isAppropriate(superName);
         if (flag) {
-            if (!resultList.contains(name)) {
-                resultList.add(name);
-            }
+            SearchItem item = SearchItem.ofType(name);
+            addResult(item);
         }
     }
 }

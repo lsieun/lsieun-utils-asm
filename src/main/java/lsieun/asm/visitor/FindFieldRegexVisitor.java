@@ -1,6 +1,9 @@
 package lsieun.asm.visitor;
 
+import lsieun.asm.search.SearchItem;
 import org.objectweb.asm.FieldVisitor;
+
+import static lsieun.asm.utils.ASMStringUtils.getClassMemberInfo;
 
 public class FindFieldRegexVisitor extends ClassRegexVisitor {
     private String owner;
@@ -16,13 +19,11 @@ public class FindFieldRegexVisitor extends ClassRegexVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        String name_and_desc = getMethodDescInfo(name, descriptor);
+        String name_and_desc = getClassMemberInfo(name, descriptor);
         boolean flag = isAppropriate(name_and_desc);
         if (flag) {
-            String item = String.format("%s.class %s:%s", owner, name, descriptor);
-            if (!resultList.contains(item)) {
-                resultList.add(item);
-            }
+            SearchItem item = SearchItem.ofField(owner, name, descriptor);
+            addResult(item);
         }
 
         return null;

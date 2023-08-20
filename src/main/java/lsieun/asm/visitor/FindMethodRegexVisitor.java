@@ -1,6 +1,9 @@
 package lsieun.asm.visitor;
 
+import lsieun.asm.search.SearchItem;
 import org.objectweb.asm.MethodVisitor;
+
+import static lsieun.asm.utils.ASMStringUtils.getClassMemberInfo;
 
 public class FindMethodRegexVisitor extends ClassRegexVisitor {
     private String owner;
@@ -16,13 +19,11 @@ public class FindMethodRegexVisitor extends ClassRegexVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        String name_and_desc = getMethodDescInfo(name, descriptor);
+        String name_and_desc = getClassMemberInfo(name, descriptor);
         boolean flag = isAppropriate(name_and_desc);
         if (flag) {
-            String item = String.format("%s.class %s:%s", owner, name, descriptor);
-            if (!resultList.contains(item)) {
-                resultList.add(item);
-            }
+            SearchItem item = SearchItem.ofMethod(owner, name, descriptor);
+            addResult(item);
         }
 
         return null;

@@ -1,5 +1,6 @@
 package lsieun.asm.utils;
 
+import lsieun.asm.search.SearchItem;
 import lsieun.asm.visitor.*;
 import lsieun.utils.RegexUtils;
 import lsieun.utils.archive.JarUtils;
@@ -17,10 +18,10 @@ public class FindUtils {
         return list;
     }
 
-    public static List<String> findInterface(String jar_path, String[] path_regex_array, String[] interface_name_regex_array) {
+    public static List<SearchItem> findInterface(String jar_path, String[] path_regex_array, String[] interface_name_regex_array) {
         List<String> list = filter(jar_path, path_regex_array);
 
-        List<String> resultList = new ArrayList<>();
+        List<SearchItem> resultList = new ArrayList<>();
         for (String item : list) {
             byte[] bytes = JarUtils.readClass(jar_path, item);
             ClassReader cr = new ClassReader(bytes);
@@ -31,10 +32,10 @@ public class FindUtils {
         return resultList;
     }
 
-    public static List<String> findSuper(String jar_path, String[] path_regex_array, String[] super_name_regex_array) {
+    public static List<SearchItem> findSuper(String jar_path, String[] path_regex_array, String[] super_name_regex_array) {
         List<String> list = filter(jar_path, path_regex_array);
 
-        List<String> resultList = new ArrayList<>();
+        List<SearchItem> resultList = new ArrayList<>();
         for (String item : list) {
             byte[] bytes = JarUtils.readClass(jar_path, item);
             ClassReader cr = new ClassReader(bytes);
@@ -45,10 +46,10 @@ public class FindUtils {
         return resultList;
     }
 
-    public static List<String> findField(String jar_path, String[] path_regex_array, String[] includes, String[] excludes) {
+    public static List<SearchItem> findField(String jar_path, String[] path_regex_array, String[] includes, String[] excludes) {
         List<String> list = filter(jar_path, path_regex_array);
 
-        List<String> resultList = new ArrayList<>();
+        List<SearchItem> resultList = new ArrayList<>();
         for (String item : list) {
             byte[] bytes = JarUtils.readClass(jar_path, item);
             ClassReader cr = new ClassReader(bytes);
@@ -76,10 +77,10 @@ public class FindUtils {
      * @param includes 包含哪些方法
      * @param excludes 不包含哪些方法
      */
-    public static List<String> findMethod(String jar_path, String[] path_regex_array, String[] includes, String[] excludes) {
+    public static List<SearchItem> findMethod(String jar_path, String[] path_regex_array, String[] includes, String[] excludes) {
         List<String> list = filter(jar_path, path_regex_array);
 
-        List<String> resultList = new ArrayList<>();
+        List<SearchItem> resultList = new ArrayList<>();
         for (String item : list) {
             byte[] bytes = JarUtils.readClass(jar_path, item);
             ClassReader cr = new ClassReader(bytes);
@@ -90,11 +91,11 @@ public class FindUtils {
         return resultList;
     }
 
-    public static List<String> findMethodRef(String jar_path, String[] path_regex_array,
+    public static List<SearchItem> findMethodRef(String jar_path, String[] path_regex_array,
                                              String refClassName, String[] includes, String[] excludes) {
         List<String> list = filter(jar_path, path_regex_array);
 
-        List<String> resultList = new ArrayList<>();
+        List<SearchItem> resultList = new ArrayList<>();
         int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
 
         for (String str : list) {
@@ -107,18 +108,18 @@ public class FindUtils {
         return resultList;
     }
 
-    public static void displayResult(List<String> resultList) {
+    public static void displayResult(List<SearchItem> resultList) {
         if (resultList == null || resultList.size() < 1) return;
 
         for (int i = 0; i < resultList.size(); i++) {
-            String result = resultList.get(i);
+            SearchItem result = resultList.get(i);
             System.out.println(String.format("(%s)ClassName: %s", (i + 1), result));
         }
     }
 
     public static void main(String[] args) {
         String jar_path = "D:/tmp/target.jar";
-        List<String> list = findInterface(jar_path, new String[]{
+        List<SearchItem> list = findInterface(jar_path, new String[]{
                 "^\\w+_you/.*\\.class$"
         }, new String[]{
                 "^java/lang/instrument/ClassFileTransformer$"

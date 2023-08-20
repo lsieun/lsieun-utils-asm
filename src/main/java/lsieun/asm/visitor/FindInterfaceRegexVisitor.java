@@ -1,5 +1,7 @@
 package lsieun.asm.visitor;
 
+import lsieun.asm.search.SearchItem;
+
 public class FindInterfaceRegexVisitor extends ClassRegexVisitor {
     public FindInterfaceRegexVisitor(String[] includes, String[] excludes) {
         super(null, includes, excludes);
@@ -10,12 +12,11 @@ public class FindInterfaceRegexVisitor extends ClassRegexVisitor {
         if (interfaces == null || interfaces.length == 0) {
             return;
         }
-        for (String item : interfaces) {
-            boolean flag = isAppropriate(item);
+        for (String itf : interfaces) {
+            boolean flag = isAppropriate(itf);
             if (flag) {
-                if (!resultList.contains(name)) {
-                    resultList.add(name);
-                }
+                SearchItem item = SearchItem.ofType(name);
+                addResult(item);
             }
         }
     }
