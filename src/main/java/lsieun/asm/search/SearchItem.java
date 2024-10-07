@@ -18,13 +18,17 @@ public class SearchItem {
 
     @Override
     public boolean equals(Object o) {
+        // ref
         if (this == o) {
             return true;
         }
+
+        // clazz
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
+        // fields
         SearchItem that = (SearchItem) o;
         return type == that.type &&
                 Objects.equals(internalName, that.internalName) &&
@@ -71,7 +75,7 @@ public class SearchItem {
         if (line == null) {
             return null;
         }
-        String[] array1 = line.split(" ");
+        String[] array1 = line.split("\\s+");
 
         SearchType type = SearchType.valueOf(array1[0]);
         String internalName = array1[1];

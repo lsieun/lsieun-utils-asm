@@ -1,6 +1,6 @@
 package lsieun.asm.visitor;
 
-import lsieun.asm.cst.Constant;
+import lsieun.asm.cst.MyConst;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.AdviceAdapter;
@@ -9,7 +9,7 @@ public class TransformerVisitor extends ClassVisitor {
     private String containerName;
 
     public TransformerVisitor(ClassVisitor cv, String containerName) {
-        super(Constant.API_VERSION, cv);
+        super(MyConst.API_VERSION, cv);
         this.containerName = containerName;
     }
 
@@ -27,7 +27,7 @@ public class TransformerVisitor extends ClassVisitor {
     private class TransformerAdapter extends AdviceAdapter {
 
         public TransformerAdapter(MethodVisitor mv, int access, String name, String descriptor) {
-            super(Constant.API_VERSION, mv, access, name, descriptor);
+            super(MyConst.API_VERSION, mv, access, name, descriptor);
         }
 
         @Override
