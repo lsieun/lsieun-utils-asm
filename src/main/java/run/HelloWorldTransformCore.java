@@ -1,15 +1,10 @@
 package run;
 
-import lsieun.asm.function.InsnInvokeConsumer;
-import lsieun.asm.function.InsnInvokeMatch;
-import lsieun.asm.function.MethodMatch;
+import lsieun.asm.function.match.InsnInvokeMatch;
+import lsieun.asm.function.match.MethodMatch;
 import lsieun.asm.search.SearchItem;
 import lsieun.asm.utils.ClassFileFindUtils;
-import lsieun.asm.utils.ClassFileModifyUtils;
-import lsieun.asm.utils.CodeSegmentUtils;
 import lsieun.utils.io.resource.ResourceUtils;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,7 +32,7 @@ public class HelloWorldTransformCore {
 //                });
 //        Files.write(path, bytes2);
 
-        List<SearchItem> itemList = ClassFileFindUtils.findInsnInvoke(bytes1,
+        List<SearchItem> itemList = ClassFileFindUtils.findMethodByInsnInvoke(bytes1,
                 MethodMatch.AllMethods.INSTANCE,
                 InsnInvokeMatch.Common.SYSTEM_EXIT);
         itemList.forEach(System.out::println);

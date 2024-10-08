@@ -1,9 +1,9 @@
-package lsieun.asm.function;
+package lsieun.asm.function.match;
 
 import lsieun.asm.search.SearchItem;
 
 import java.util.List;
 
-public interface MultipleResult {
+public interface MatchResult {
     List<SearchItem> getResultList();
 }

@@ -2,7 +2,7 @@ package lsieun.asm.visitor.modify.method;
 
 
 import lsieun.asm.cst.MyConst;
-import lsieun.asm.function.StdMethodConsumer;
+import lsieun.asm.function.consumer.StdMethodConsumer;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 

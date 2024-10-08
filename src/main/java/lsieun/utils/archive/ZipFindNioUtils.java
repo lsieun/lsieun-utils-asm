@@ -1,6 +1,7 @@
 package lsieun.utils.archive;
 
 import lsieun.annotation.method.MethodParamExample;
+import lsieun.annotation.mind.blueprint.Intention;
 import lsieun.utils.ds.pair.Pair;
 import lsieun.utils.log.Logger;
 import lsieun.utils.log.LoggerFactory;
@@ -29,14 +30,14 @@ import java.util.stream.Stream;
 public class ZipFindNioUtils {
     private static final Logger logger = LoggerFactory.getLogger(ZipFindNioUtils.class);
 
-    public static List<Path> getEntryListByExtension(Path jarPath,
-                                                     @MethodParamExample({".class", ".java"}) String ext) throws IOException {
+    public static List<String> getEntryListByExtension(Path jarPath,
+                                                       @MethodParamExample({".class", ".java"}) String ext) throws IOException {
         BiPredicate<Path, BasicFileAttributes> predicate = (path, attrs) ->
                 attrs.isRegularFile() && path.getFileName().toString().endsWith(ext);
         return getEntryList(jarPath, predicate);
     }
 
-    public static List<Path> getClassList(Path jarPath) throws IOException {
+    public static List<String> getClassList(Path jarPath) throws IOException {
         BiPredicate<Path, BasicFileAttributes> predicate = (path, attrs) -> {
             if (!attrs.isRegularFile()) {
                 return false;
@@ -62,8 +63,8 @@ public class ZipFindNioUtils {
         return getEntryList(jarPath, predicate);
     }
 
-    public static List<Path> getEntryList(Path jarPath,
-                                          BiPredicate<Path, BasicFileAttributes> predicate) throws IOException {
+    public static List<String> getEntryList(Path jarPath,
+                                            BiPredicate<Path, BasicFileAttributes> predicate) throws IOException {
         if (jarPath == null) {
             throw new IllegalArgumentException("jarPath is null");
         }
@@ -83,19 +84,21 @@ public class ZipFindNioUtils {
             Path dirPath = zipfs.getPath("/");
 
             try (Stream<Path> stream = Files.find(dirPath, Integer.MAX_VALUE, predicate)) {
-                return stream.sorted(Comparator.comparing(Path::toString)).collect(Collectors.toList());
+                return stream
+                        .map(Path::toString)
+                        .sorted()
+                        .collect(Collectors.toList());
             }
         }
     }
 
     public static List<String> getClassNameList(Path jarPath) throws IOException {
-        List<Path> classList = getClassList(jarPath);
+        List<String> classList = getClassList(jarPath);
         int size = classList.size();
 
         List<String> nameList = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            Path path = classList.get(i);
-            String entry = path.toString();
+            String entry = classList.get(i);
             int index = entry.lastIndexOf(".");
             if (entry.startsWith("/")) {
                 entry = entry.substring(1, index);
@@ -110,14 +113,23 @@ public class ZipFindNioUtils {
         return nameList;
     }
 
-    public static List<Pair<String, Path>> findClass(List<Path> pathList, String[] classnames) throws IOException {
+    public static List<Path> findJarByEntry(List<Path> pathList, List<String> entryList) {
+        List<Pair<String, Path>> pairList = findEntry(pathList, entryList);
+        return pairList.stream().map(Pair::second).distinct().toList();
+    }
+
+    public static List<Pair<String, Path>> findClass(List<Path> pathList, String[] classnames) {
         List<String> entryList = Arrays.stream(classnames)
                 .map(name -> name.replace(".", "/") + ".class")
                 .toList();
         return findEntry(pathList, entryList);
     }
 
-    public static List<Pair<String, Path>> findEntry(List<Path> pathList, List<String> entryList) throws IOException {
+    @Intention({
+            "Pair 中 String 存储的是 com/abc/Xyz.class",
+            "Pair 中 Path 存储是 jar 包的路径"
+    })
+    public static List<Pair<String, Path>> findEntry(List<Path> pathList, List<String> entryList) {
         Objects.requireNonNull(pathList);
         Objects.requireNonNull(entryList);
 

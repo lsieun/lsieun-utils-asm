@@ -1,9 +1,10 @@
 package lsieun.asm.utils;
 
-import lsieun.asm.function.InsnInvokeMatch;
-import lsieun.asm.function.MethodMatch;
+import lsieun.asm.function.match.InsnInvokeMatch;
+import lsieun.asm.function.match.MethodMatch;
 import lsieun.asm.search.SearchItem;
-import lsieun.asm.visitor.find.ClassVisitorForFindInsnInvoke;
+import lsieun.asm.visitor.find.ClassVisitorForFindInsnByInsnInvoke;
+import lsieun.asm.visitor.find.ClassVisitorForFindMethodByInsnInvoke;
 import lsieun.asm.visitor.find.ClassVisitorForFindMethod;
 import lsieun.utils.archive.ZipContentNioUtils;
 import lsieun.utils.ds.pair.Pair;
@@ -36,12 +37,12 @@ public class ClassFileFindUtils {
         return cv.getResultList();
     }
 
-    public static List<SearchItem> findInsnInvoke(byte[] bytes, MethodMatch methodMatch, InsnInvokeMatch insnInvokeMatch) {
+    public static List<SearchItem> findMethodByInsnInvoke(byte[] bytes, MethodMatch methodMatch, InsnInvokeMatch insnInvokeMatch) {
         //（1）构建 ClassReader
         ClassReader cr = new ClassReader(bytes);
 
         //（2）构建 ClassVisitor
-        ClassVisitorForFindInsnInvoke cv = new ClassVisitorForFindInsnInvoke(methodMatch, insnInvokeMatch);
+        ClassVisitorForFindMethodByInsnInvoke cv = new ClassVisitorForFindMethodByInsnInvoke(methodMatch, insnInvokeMatch);
 
         //（3）结合 ClassReader 和 ClassVisitor
         int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
@@ -51,6 +52,26 @@ public class ClassFileFindUtils {
         return cv.getResultList();
     }
 
+    public static List<SearchItem> findInsnByInsnInvoke(byte[] bytes, MethodMatch methodMatch, InsnInvokeMatch insnInvokeMatch) {
+        //（1）构建 ClassReader
+        ClassReader cr = new ClassReader(bytes);
+
+        //（2）构建 ClassVisitor
+        ClassVisitorForFindInsnByInsnInvoke cv = new ClassVisitorForFindInsnByInsnInvoke(methodMatch, insnInvokeMatch);
+
+        //（3）结合 ClassReader 和 ClassVisitor
+        int parsingOptions = ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES;
+        cr.accept(cv, parsingOptions);
+
+        //（4）返回结果
+        return cv.getResultList();
+    }
+
+    /**
+     * @see ClassFileFindUtils#findMethod(byte[], MethodMatch)
+     * @see ClassFileFindUtils#findMethodByInsnInvoke(byte[], MethodMatch, InsnInvokeMatch)
+     * @see ClassFileFindUtils#findInsnByInsnInvoke(byte[], MethodMatch, InsnInvokeMatch)
+     */
     public static List<SearchItem> find(List<byte[]> byteArrayList, Function<byte[], List<SearchItem>> func) {
         List<SearchItem> resultList = new ArrayList<>();
         for (byte[] bytes : byteArrayList) {
@@ -60,6 +81,11 @@ public class ClassFileFindUtils {
         return resultList;
     }
 
+    /**
+     * @see ClassFileFindUtils#findMethod(byte[], MethodMatch)
+     * @see ClassFileFindUtils#findMethodByInsnInvoke(byte[], MethodMatch, InsnInvokeMatch)
+     * @see ClassFileFindUtils#findInsnByInsnInvoke(byte[], MethodMatch, InsnInvokeMatch)
+     */
     public static Pair<Path, List<SearchItem>> findInJar(Path jarPath,
                                                          Function<byte[], List<SearchItem>> func) throws IOException {
         logger.debug("jarPath: {0}", jarPath);
@@ -69,6 +95,11 @@ public class ClassFileFindUtils {
         return new Pair<>(jarPath, searchItemList);
     }
 
+    /**
+     * @see ClassFileFindUtils#findMethod(byte[], MethodMatch)
+     * @see ClassFileFindUtils#findMethodByInsnInvoke(byte[], MethodMatch, InsnInvokeMatch)
+     * @see ClassFileFindUtils#findInsnByInsnInvoke(byte[], MethodMatch, InsnInvokeMatch)
+     */
     public static List<Pair<Path, List<SearchItem>>> findInJarList(List<Path> jarPathList,
                                                                    Function<byte[], List<SearchItem>> func) throws IOException {
         List<Pair<Path, List<SearchItem>>> resultList = new ArrayList<>();
@@ -79,6 +110,11 @@ public class ClassFileFindUtils {
         return resultList;
     }
 
+    /**
+     * @see ClassFileFindUtils#findMethod(byte[], MethodMatch)
+     * @see ClassFileFindUtils#findMethodByInsnInvoke(byte[], MethodMatch, InsnInvokeMatch)
+     * @see ClassFileFindUtils#findInsnByInsnInvoke(byte[], MethodMatch, InsnInvokeMatch)
+     */
     public static List<Pair<Path, List<SearchItem>>> findInDir(Path dirPath, int maxDepth,
                                                                Function<byte[], List<SearchItem>> func) throws IOException {
         logger.debug("dirPath: {0}", dirPath);

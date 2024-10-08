@@ -1,6 +1,6 @@
 package lsieun.asm.visitor.modify.method;
 
-import lsieun.asm.function.MethodMatch;
+import lsieun.asm.function.match.MethodMatch;
 import lsieun.asm.visitor.common.ClassVisitorForMethodMatch;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -13,9 +13,9 @@ public class ClassVisitorForMethodBodyEmpty extends ClassVisitorForMethodMatch {
     }
 
     @Override
-    protected MethodVisitor getNewMethodVisitor(MethodVisitor mv,
-                                                int methodAccess, String methodName, String methodDesc,
-                                                String signature, String[] exceptions) {
+    protected MethodVisitor newMethodVisitor(MethodVisitor mv,
+                                             int methodAccess, String methodName, String methodDesc,
+                                             String signature, String[] exceptions) {
         // (1) method argument types and return type
         Type t = Type.getType(methodDesc);
         Type[] argumentTypes = t.getArgumentTypes();

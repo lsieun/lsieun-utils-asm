@@ -1,7 +1,6 @@
-package lsieun.asm.function;
+package lsieun.asm.function.consumer;
 
 import lsieun.asm.utils.CodeSegmentUtils;
-import lsieun.utils.log.LogColor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -61,7 +60,11 @@ public enum StdMethodConsumer implements MethodConsumer, Opcodes {
         public void accept(MethodVisitor mv, int version, String owner, int methodAccess, String methodName, String methodDesc) {
             CodeSegmentUtils.printMessage(mv, "Stack Trace:");
             if (version < (44 + 9)) {
-                CodeSegmentUtils.printStackTrace(mv, owner);
+                String msg = String.format("METHOD %s %s:%s",
+                        owner,
+                        methodName,
+                        methodDesc);
+                CodeSegmentUtils.printStackTrace(mv, msg);
             }
             else {
                 CodeSegmentUtils.printStackTraceSinceJava9(mv, owner);

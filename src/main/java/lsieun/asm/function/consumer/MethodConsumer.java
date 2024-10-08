@@ -1,4 +1,4 @@
-package lsieun.asm.function;
+package lsieun.asm.function.consumer;
 
 import org.objectweb.asm.MethodVisitor;
 

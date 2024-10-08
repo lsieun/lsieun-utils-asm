@@ -1,8 +1,11 @@
 package lsieun.utils.io.file;
 
+import lsieun.annotation.type.UtilityClass;
+
 import java.net.URI;
 import java.nio.file.Path;
 
+@UtilityClass
 @SuppressWarnings("UnnecessaryLocalVariable")
 public class FileFormatUtils {
     public static String format(Path path, FileOperation op) {

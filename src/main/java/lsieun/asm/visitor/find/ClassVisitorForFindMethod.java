@@ -1,47 +1,35 @@
 package lsieun.asm.visitor.find;
 
-import lsieun.asm.cst.MyConst;
-import lsieun.asm.function.MethodMatch;
-import lsieun.asm.function.MultipleResult;
+import lsieun.asm.description.ByteCodeElementType;
+import lsieun.asm.function.match.MatchFormat;
+import lsieun.asm.function.match.MatchState;
+import lsieun.asm.function.match.MethodMatch;
 import lsieun.asm.search.SearchItem;
-import org.objectweb.asm.ClassVisitor;
+import lsieun.utils.log.Logger;
+import lsieun.utils.log.LoggerFactory;
 import org.objectweb.asm.MethodVisitor;
 
-import java.util.ArrayList;
-import java.util.List;
+public class ClassVisitorForFindMethod extends ClassVisitorForFind {
+    private static final Logger logger = LoggerFactory.getLogger(ClassVisitorForFindMethod.class);
 
-public class ClassVisitorForFindMethod extends ClassVisitor implements MultipleResult {
-    protected int version;
-    protected String currentType;
     private final MethodMatch methodMatch;
-    private final List<SearchItem> resultList = new ArrayList<>();
 
     public ClassVisitorForFindMethod(MethodMatch methodMatch) {
-        super(MyConst.API_VERSION);
         this.methodMatch = methodMatch;
     }
 
     @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        this.version = version;
-        this.currentType = name;
-        super.visit(version, access, name, signature, superName, interfaces);
-    }
-
-    @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        boolean flag = methodMatch.test(version, currentType, access, name, descriptor, signature, exceptions);
+        logger.trace(() -> MatchFormat.format(MatchState.MATCHING, ByteCodeElementType.METHOD, currentOwner, name, descriptor));
+        boolean flag = methodMatch.test(version, currentOwner, access, name, descriptor, signature, exceptions);
+
         if (flag) {
-            SearchItem item = SearchItem.ofMethod(currentType, name, descriptor);
-            if(!resultList.contains(item)) {
+            logger.debug(() -> MatchFormat.format(MatchState.MATCHED, ByteCodeElementType.METHOD, currentOwner, name, descriptor));
+            SearchItem item = SearchItem.ofMethod(currentOwner, name, descriptor);
+            if (!resultList.contains(item)) {
                 resultList.add(item);
             }
         }
         return null;
-    }
-
-    @Override
-    public List<SearchItem> getResultList() {
-        return resultList;
     }
 }

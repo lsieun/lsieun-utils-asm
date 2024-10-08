@@ -155,10 +155,10 @@ public class CodeSegmentUtils {
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
     }
 
-    public static void printStackTrace(MethodVisitor mv, String owner) {
+    public static void printStackTrace(MethodVisitor mv, String msg) {
         mv.visitTypeInsn(NEW, "java/lang/Exception");
         mv.visitInsn(DUP);
-        mv.visitLdcInsn("Exception From " + owner);
+        mv.visitLdcInsn(msg);
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Exception", "<init>", "(Ljava/lang/String;)V", false);
         mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Exception", "printStackTrace", "(Ljava/io/PrintStream;)V", false);
@@ -253,5 +253,42 @@ public class CodeSegmentUtils {
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", descriptor, false);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+    }
+
+    public static void pop(MethodVisitor mv, Type t) {
+        if (mv == null) {
+            return;
+        }
+
+        int size = t.getSize();
+        if (size == 1) {
+            mv.visitInsn(POP);
+        }
+        else if (size == 2) {
+            mv.visitInsn(POP2);
+        }
+        else {
+            assert false : "should not be here";
+        }
+    }
+
+    public static void popByMethodDesc(MethodVisitor mv, boolean isStatic, String methodDesc) {
+        if (mv == null) {
+            return;
+        }
+
+        // pop arg types
+        Type methodType = Type.getMethodType(methodDesc);
+        Type[] argumentTypes = methodType.getArgumentTypes();
+        int argCount = argumentTypes.length;
+        for (int i = argCount - 1; i >= 0; i--) {
+            Type argType = argumentTypes[i];
+            pop(mv, argType);
+        }
+
+        // pop this
+        if (isStatic) {
+            pop(mv, Type.getType(Object.class));
+        }
     }
 }

@@ -1,7 +1,7 @@
 package lsieun.asm.visitor.modify.method;
 
 import lsieun.asm.cst.MyConst;
-import lsieun.asm.function.MethodMatch;
+import lsieun.asm.function.match.MethodMatch;
 import lsieun.asm.utils.CodeMethodUtils;
 import lsieun.asm.visitor.common.ClassVisitorForMethodMatch;
 import org.objectweb.asm.ClassVisitor;
@@ -29,9 +29,9 @@ public class ClassVisitorForMethodBodyInfo extends ClassVisitorForMethodMatch {
     }
 
     @Override
-    protected MethodVisitor getNewMethodVisitor(MethodVisitor mv,
-                                                int methodAccess, String methodName, String methodDesc,
-                                                String signature, String[] exceptions) {
+    protected MethodVisitor newMethodVisitor(MethodVisitor mv,
+                                             int methodAccess, String methodName, String methodDesc,
+                                             String signature, String[] exceptions) {
         return new MethodVisitorForMethodBodyInfo(mv, version, currentOwner, methodAccess, methodName, methodDesc, options);
     }
     // endregion

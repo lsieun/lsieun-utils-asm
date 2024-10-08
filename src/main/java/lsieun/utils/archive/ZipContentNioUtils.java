@@ -29,8 +29,8 @@ public class ZipContentNioUtils {
     }
 
     public static List<Integer> readAllClassFileVersion(Path zipPath) throws IOException {
-        List<Path> classList = ZipFindNioUtils.getClassList(zipPath);
-        List<String> entryList = classList.stream().map(Path::toString).toList();
+        List<String> classList = ZipFindNioUtils.getClassList(zipPath);
+        List<String> entryList = classList.stream().toList();
         List<Pair<String, byte[]>> pairList = readEntryList(zipPath, entryList);
 
         List<Integer> list = new ArrayList<>();
@@ -79,8 +79,8 @@ public class ZipContentNioUtils {
 
     public static List<Pair<String, byte[]>> readClassList(Path jarPath) throws IOException {
         Objects.requireNonNull(jarPath, "jarPath must not be null");
-        List<Path> classList = ZipFindNioUtils.getClassList(jarPath);
-        List<String> entryList = classList.stream().map(Path::toString).toList();
+        List<String> classList = ZipFindNioUtils.getClassList(jarPath);
+        List<String> entryList = classList.stream().toList();
         return readEntryList(jarPath, entryList);
     }
 

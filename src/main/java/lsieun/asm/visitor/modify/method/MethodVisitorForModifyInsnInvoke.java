@@ -1,7 +1,7 @@
 package lsieun.asm.visitor.modify.method;
 
-import lsieun.asm.function.InsnInvokeConsumer;
-import lsieun.asm.function.InsnInvokeMatch;
+import lsieun.asm.function.consumer.InsnInvokeConsumer;
+import lsieun.asm.function.match.InsnInvokeMatch;
 import lsieun.asm.visitor.common.MethodVisitorForInsnInvokeMatch;
 import org.objectweb.asm.MethodVisitor;
 
@@ -18,7 +18,9 @@ public class MethodVisitorForModifyInsnInvoke extends MethodVisitorForInsnInvoke
 
 
     @Override
-    protected void generateNewMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-        insnInvokeConsumer.accept(mv, opcode, owner, name, descriptor, isInterface);
+    protected void onMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+        insnInvokeConsumer.accept(mv,
+                currentType, currentMethodName, currentMethodDesc,
+                opcode, owner, name, descriptor, isInterface);
     }
 }

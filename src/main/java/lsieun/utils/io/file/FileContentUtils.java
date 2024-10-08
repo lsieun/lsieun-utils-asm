@@ -1,5 +1,6 @@
 package lsieun.utils.io.file;
 
+import lsieun.annotation.type.UtilityClass;
 import lsieun.utils.log.Logger;
 import lsieun.utils.log.LoggerFactory;
 
@@ -12,6 +13,7 @@ import java.util.Objects;
 import static lsieun.utils.io.file.FileOperation.READ;
 import static lsieun.utils.io.file.FileOperation.WRITE;
 
+@UtilityClass
 public class FileContentUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FileContentUtils.class);

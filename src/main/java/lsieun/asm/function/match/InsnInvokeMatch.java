@@ -1,12 +1,30 @@
-package lsieun.asm.function;
+package lsieun.asm.function.match;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Method;
 
+/**
+ * @see InsnInvokeMatchBuddy
+ */
 public interface InsnInvokeMatch {
     boolean test(int opcode, String owner, String name, String descriptor);
+
+    enum Binary implements InsnInvokeMatch {
+        TRUE {
+            @Override
+            public boolean test(int opcode, String owner, String name, String descriptor) {
+                return true;
+            }
+        },
+        FALSE{
+            @Override
+            public boolean test(int opcode, String owner, String name, String descriptor) {
+                return false;
+            }
+        };
+    }
 
     enum Common implements InsnInvokeMatch {
         SYSTEM_EXIT {

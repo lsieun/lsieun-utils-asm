@@ -18,8 +18,8 @@ import static java.lang.annotation.ElementType.*;
         PACKAGE,
         TYPE_PARAMETER,
         TYPE_USE,
-//        MODULE,
-//        RECORD_COMPONENT,
+        MODULE,
+        RECORD_COMPONENT,
 })
 public @interface ToDo {
     String[] value();

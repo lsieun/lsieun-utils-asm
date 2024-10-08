@@ -1,8 +1,8 @@
 package lsieun.asm.utils;
 
-import lsieun.asm.function.InsnInvokeConsumer;
-import lsieun.asm.function.InsnInvokeMatch;
-import lsieun.asm.function.MethodMatch;
+import lsieun.asm.function.consumer.InsnInvokeConsumer;
+import lsieun.asm.function.match.InsnInvokeMatch;
+import lsieun.asm.function.match.MethodMatch;
 import lsieun.asm.visitor.modify.method.ClassVisitorForModifyInsnInvoke;
 import lsieun.asm.visitor.modify.method.ClassVisitorForMethodBodyEmpty;
 import lsieun.asm.visitor.modify.method.ClassVisitorForMethodBodyInfo;
