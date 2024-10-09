@@ -20,51 +20,21 @@ import java.util.stream.Stream;
 
 /**
  * <pre>
- *                                                        ┌─── getEntryListByExtension()
- *                    ┌─── file ───┼─── getEntryList() ───┤
- * ZipFindNioUtils ───┤                                   └─── getClassList() ──────────────┼─── getClassNameList()
- *                    │
- *                    └─── dir ────┼─── findEntry() ───┼─── findClass()
+ *                                                                 ┌─── findEntryListByExtension()
+ *                    ┌─── single.jar ─────┼─── findEntryList() ───┤
+ *                    │                                            └─── findClassList() ──────────────┼─── findClassNameList()
+ * ZipFindNioUtils ───┤
+ *                    │                                           ┌─── findPairListByClassNames()
+ *                    └─── multiple.jar ───┼─── findPairList() ───┤
+ *                                                                └─── findFileList()
  * </pre>
  */
 public class ZipFindNioUtils {
     private static final Logger logger = LoggerFactory.getLogger(ZipFindNioUtils.class);
 
-    public static List<String> getEntryListByExtension(Path jarPath,
-                                                       @MethodParamExample({".class", ".java"}) String ext) throws IOException {
-        BiPredicate<Path, BasicFileAttributes> predicate = (path, attrs) ->
-                attrs.isRegularFile() && path.getFileName().toString().endsWith(ext);
-        return getEntryList(jarPath, predicate);
-    }
-
-    public static List<String> getClassList(Path jarPath) throws IOException {
-        BiPredicate<Path, BasicFileAttributes> predicate = (path, attrs) -> {
-            if (!attrs.isRegularFile()) {
-                return false;
-            }
-
-            String filename = path.getFileName().toString();
-
-            if (!filename.endsWith(".class")) {
-                return false;
-            }
-
-            if (filename.equals("package-info.class")) {
-                return false;
-            }
-
-            if (filename.contains("$")) {
-                return false;
-            }
-
-            return true;
-        };
-
-        return getEntryList(jarPath, predicate);
-    }
-
-    public static List<String> getEntryList(Path jarPath,
-                                            BiPredicate<Path, BasicFileAttributes> predicate) throws IOException {
+    // region single.jar
+    public static List<String> findEntryList(Path jarPath,
+                                             BiPredicate<Path, BasicFileAttributes> predicate) throws IOException {
         if (jarPath == null) {
             throw new IllegalArgumentException("jarPath is null");
         }
@@ -92,8 +62,43 @@ public class ZipFindNioUtils {
         }
     }
 
-    public static List<String> getClassNameList(Path jarPath) throws IOException {
-        List<String> classList = getClassList(jarPath);
+
+    public static List<String> findEntryListByExtension(Path jarPath,
+                                                        @MethodParamExample({".class", ".java"}) String ext) throws IOException {
+        BiPredicate<Path, BasicFileAttributes> predicate = (path, attrs) ->
+                attrs.isRegularFile() && path.getFileName().toString().endsWith(ext);
+        return findEntryList(jarPath, predicate);
+    }
+
+    public static List<String> findClassList(Path jarPath) throws IOException {
+        BiPredicate<Path, BasicFileAttributes> predicate = (path, attrs) -> {
+            if (!attrs.isRegularFile()) {
+                return false;
+            }
+
+            String filename = path.getFileName().toString();
+
+            if (!filename.endsWith(".class")) {
+                return false;
+            }
+
+            if (filename.equals("package-info.class")) {
+                return false;
+            }
+
+            if (filename.contains("$")) {
+                return false;
+            }
+
+            return true;
+        };
+
+        return findEntryList(jarPath, predicate);
+    }
+
+
+    public static List<String> findClassNameList(Path jarPath) throws IOException {
+        List<String> classList = findClassList(jarPath);
         int size = classList.size();
 
         List<String> nameList = new ArrayList<>(size);
@@ -112,24 +117,14 @@ public class ZipFindNioUtils {
         Collections.sort(nameList);
         return nameList;
     }
+    // endregion
 
-    public static List<Path> findJarByEntry(List<Path> pathList, List<String> entryList) {
-        List<Pair<String, Path>> pairList = findEntry(pathList, entryList);
-        return pairList.stream().map(Pair::second).distinct().toList();
-    }
-
-    public static List<Pair<String, Path>> findClass(List<Path> pathList, String[] classnames) {
-        List<String> entryList = Arrays.stream(classnames)
-                .map(name -> name.replace(".", "/") + ".class")
-                .toList();
-        return findEntry(pathList, entryList);
-    }
-
+    // region multiple jars
     @Intention({
             "Pair 中 String 存储的是 com/abc/Xyz.class",
             "Pair 中 Path 存储是 jar 包的路径"
     })
-    public static List<Pair<String, Path>> findEntry(List<Path> pathList, List<String> entryList) {
+    public static List<Pair<String, Path>> findPairList(List<Path> pathList, List<String> entryList) {
         Objects.requireNonNull(pathList);
         Objects.requireNonNull(entryList);
 
@@ -169,4 +164,17 @@ public class ZipFindNioUtils {
         }
         return resultList;
     }
+
+    public static List<Pair<String, Path>> findPairListByClassNames(List<Path> pathList, String[] classnames) {
+        List<String> entryList = Arrays.stream(classnames)
+                .map(name -> name.replace(".", "/") + ".class")
+                .toList();
+        return findPairList(pathList, entryList);
+    }
+
+    public static List<Path> findFileList(List<Path> pathList, List<String> entryList) {
+        List<Pair<String, Path>> pairList = findPairList(pathList, entryList);
+        return pairList.stream().map(Pair::second).distinct().toList();
+    }
+    // endregion
 }

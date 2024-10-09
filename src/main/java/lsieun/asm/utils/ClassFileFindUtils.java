@@ -89,7 +89,7 @@ public class ClassFileFindUtils {
     public static Pair<Path, List<SearchItem>> findInJar(Path jarPath,
                                                          Function<byte[], List<SearchItem>> func) throws IOException {
         logger.debug("jarPath: {0}", jarPath);
-        List<Pair<String, byte[]>> pairList = ZipContentNioUtils.readClassList(jarPath);
+        List<Pair<String, byte[]>> pairList = ZipContentNioUtils.readClassBytesList(jarPath);
         List<byte[]> byteArrayList = pairList.stream().map(Pair::second).toList();
         List<SearchItem> searchItemList = find(byteArrayList, func);
         return new Pair<>(jarPath, searchItemList);

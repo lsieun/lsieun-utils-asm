@@ -1,5 +1,7 @@
 package lsieun.task.jar;
 
+import lsieun.annotation.method.MethodParamExample;
+import lsieun.annotation.mind.blueprint.Intention;
 import lsieun.utils.archive.ZipFindNioUtils;
 import lsieun.utils.ds.pair.Pair;
 import lsieun.utils.ds.pair.PairBuddy;
@@ -10,24 +12,59 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class JarCopyTask {
-    public static void copyJarByClass(Path srcPath, Path dstPath, String... classArray) throws IOException {
+    @Intention({
+            "问题：IntelliJ IDEA 有许多 jar 包，有一些是第三方的 jar 包，有一些是 Jetbrains 提供的 jar包，两种类型的 jar 包无法区分",
+            "思路：根据 jar 包里的路径前缀，找到所有相关的 jar 包，然后复制到指定文件夹"
+    })
+    public static void copyJarToDstDirByEntryPaths(Path srcPath, int maxDepth, Path dstPath,
+                                                   @MethodParamExample({"com/intellij/", "com/jetbrains/"})
+                                                   String... entryPaths) throws IOException {
+        // check srcPath
+        if (!Files.exists(srcPath)) return;
+        if (!Files.isDirectory(srcPath)) return;
+
+        // check array
+        if (entryPaths == null || entryPaths.length == 0) return;
+
+        // jar list
+        List<Path> fileList = DirNioUtils.findFileListInDirByExt(srcPath, maxDepth, ".jar");
+        if (fileList.isEmpty()) return;
+
+        // path list
+        List<Path> candidateList = ZipFindNioUtils.findFileList(fileList, Arrays.asList(entryPaths));
+        if (candidateList.isEmpty()) return;
+
+        // copy file
+        FileNioUtils.copyFileList2Dir(candidateList, dstPath);
+    }
+
+    @Intention({
+            "问题：使用 Nexus 的时候，有一些类找不到，因此无法编译",
+            "思路：根据这些类名，找到所有相关的 jar 包，然后复制到指定文件夹"
+    })
+    public static void copyJarToDstDirByClassNames(Path srcPath, Path dstPath, String... classnames) throws IOException {
+        copyJarToDstDirByClassNames(srcPath, Integer.MAX_VALUE, dstPath, classnames);
+    }
+
+    public static void copyJarToDstDirByClassNames(Path srcPath, int maxDepth, Path dstPath, String... classnames) throws IOException {
         // source dir
         if (!Files.exists(srcPath)) return;
         if (!Files.isDirectory(srcPath)) return;
 
         // class array
-        if (classArray == null || classArray.length == 0) return;
+        if (classnames == null || classnames.length == 0) return;
 
         // jar list
-        List<Path> jarPathList = DirNioUtils.findFileListInDirByExt(srcPath, ".jar");
-        if (jarPathList.isEmpty()) return;
+        List<Path> fileList = DirNioUtils.findFileListInDirByExt(srcPath, maxDepth, ".jar");
+        if (fileList.isEmpty()) return;
 
         // pair list
-        List<Pair<String, Path>> pairList = ZipFindNioUtils.findClass(jarPathList, classArray);
+        List<Pair<String, Path>> pairList = ZipFindNioUtils.findPairListByClassNames(fileList, classnames);
         if (pairList.isEmpty()) return;
 
         // map
@@ -41,14 +78,10 @@ public class JarCopyTask {
         });
 
         // path list
-        List<Path> pathList = one2OnePairList.stream().map(Pair::second).distinct().toList();
+        List<Path> candidateList = one2OnePairList.stream().map(Pair::second).distinct().toList();
 
-        // move file
-        for (Path path : pathList) {
-            Path fileName = path.getFileName();
-            Path newFilePath = dstPath.resolve(fileName);
-            FileNioUtils.copy(path, newFilePath);
-        }
+        // copy file list
+        FileNioUtils.copyFileList2Dir(candidateList, dstPath);
     }
 
     private static List<Pair<String, Path>> one2oneList(Map<String, List<Path>> groupMap, Map<Path, Long> countMap) {

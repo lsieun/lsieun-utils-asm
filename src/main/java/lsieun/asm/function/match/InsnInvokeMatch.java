@@ -11,14 +11,14 @@ import java.lang.reflect.Method;
 public interface InsnInvokeMatch {
     boolean test(int opcode, String owner, String name, String descriptor);
 
-    enum Binary implements InsnInvokeMatch {
+    enum Bool implements InsnInvokeMatch {
         TRUE {
             @Override
             public boolean test(int opcode, String owner, String name, String descriptor) {
                 return true;
             }
         },
-        FALSE{
+        FALSE {
             @Override
             public boolean test(int opcode, String owner, String name, String descriptor) {
                 return false;
@@ -26,7 +26,51 @@ public interface InsnInvokeMatch {
         };
     }
 
-    enum Common implements InsnInvokeMatch {
+    class And implements InsnInvokeMatch {
+        private final InsnInvokeMatch[] matches;
+
+        private And(InsnInvokeMatch... matches) {
+            this.matches = matches;
+        }
+
+        @Override
+        public boolean test(int opcode, String owner, String name, String descriptor) {
+            for (InsnInvokeMatch match : matches) {
+                if (!match.test(opcode, owner, name, descriptor)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static And of(InsnInvokeMatch... matches) {
+            return new And(matches);
+        }
+    }
+
+    class Or implements InsnInvokeMatch {
+        private final InsnInvokeMatch[] matches;
+
+        private Or(InsnInvokeMatch... matches) {
+            this.matches = matches;
+        }
+
+        @Override
+        public boolean test(int opcode, String owner, String name, String descriptor) {
+            for (InsnInvokeMatch match : matches) {
+                if (match.test(opcode, owner, name, descriptor)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static Or of(InsnInvokeMatch... matches) {
+            return new Or(matches);
+        }
+    }
+
+    enum ByMethodInsn implements InsnInvokeMatch {
         SYSTEM_EXIT {
             @Override
             public boolean test(int opcode, String owner, String name, String descriptor) {

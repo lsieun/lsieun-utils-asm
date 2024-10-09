@@ -9,6 +9,9 @@ import lsieun.utils.log.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -36,6 +39,13 @@ public class ResourceUtils {
         String typeName = clazz.getTypeName();
         String resourcePath = typeName.replace('.', '/') + ".class";
         try (InputStream in = ClassLoader.getSystemResourceAsStream(resourcePath)) {
+            try {
+                URL resource = ClassLoader.getSystemResource(resourcePath);
+                URI uri = resource.toURI();
+                logger.info(() -> String.format("[READ RESOURCE] %s", uri));
+            } catch (URISyntaxException ignored) {
+            }
+
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
             IOUtils.copy(in, bao);
             return bao.toByteArray();

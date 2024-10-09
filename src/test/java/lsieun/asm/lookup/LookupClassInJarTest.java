@@ -36,7 +36,7 @@ class LookupClassInJarTest {
                 "org.sonatype.licensing.CustomLicenseContent",
         };
 
-        List<Pair<String, Path>> pairList = ZipFindNioUtils.findClass(jarPathList, classArray);
+        List<Pair<String, Path>> pairList = ZipFindNioUtils.findPairListByClassNames(jarPathList, classArray);
         PairBuddy.printGroupMap(pairList, Pair::first, Pair::second);
         System.out.println("=====================================");
 

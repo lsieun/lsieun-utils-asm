@@ -6,7 +6,7 @@ import org.objectweb.asm.Type;
 public interface TypeMatch {
     boolean test(Type type);
 
-    enum Binary implements TypeMatch {
+    enum Bool implements TypeMatch {
         TRUE {
             @Override
             public boolean test(Type type) {
@@ -22,40 +22,46 @@ public interface TypeMatch {
     }
 
     class And implements TypeMatch {
-        private final TypeMatch left;
-        private final TypeMatch right;
+        private final TypeMatch[] matches;
 
-        private And(final TypeMatch left, final TypeMatch right) {
-            this.left = left;
-            this.right = right;
+        private And(TypeMatch... matches) {
+            this.matches = matches;
         }
 
         @Override
         public boolean test(Type type) {
-            return left.test(type) && right.test(type);
+            for (TypeMatch match : matches) {
+                if (!match.test(type)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        public static And of(final TypeMatch left, final TypeMatch right) {
-            return new And(left, right);
+        public static And of(TypeMatch... matches) {
+            return new And(matches);
         }
     }
 
     class Or implements TypeMatch {
-        private final TypeMatch left;
-        private final TypeMatch right;
+        private final TypeMatch[] matches;
 
-        private Or(final TypeMatch left, final TypeMatch right) {
-            this.left = left;
-            this.right = right;
+        private Or(TypeMatch... matches) {
+            this.matches = matches;
         }
 
         @Override
         public boolean test(Type type) {
-            return left.test(type) || right.test(type);
+            for (TypeMatch match : matches) {
+                if (match.test(type)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public static Or of(final TypeMatch left, final TypeMatch right) {
-            return new Or(left, right);
+        public static Or of(TypeMatch... matches) {
+            return new Or(matches);
         }
     }
 }

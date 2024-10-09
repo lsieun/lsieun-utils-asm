@@ -7,15 +7,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ZipFindNioUtilsTest {
     @Test
-    void testFindJarByEntry() throws IOException {
+    void testFindFileList() throws IOException {
         Path dirPath = Path.of("D:\\ideaIU-2024.2.1.win\\lib");
-        List<Path> pathList = DirNioUtils.findFileListInDirByExt(dirPath, 1,".jar");
-        List<Path> jarList = ZipFindNioUtils.findJarByEntry(pathList, List.of("com/intellij/", "com/jetbrains/"));
-        for (Path jarPath : jarList) {
+        List<Path> fileList = DirNioUtils.findFileListInDirByExt(dirPath, 1,".jar");
+        List<Path> candidateList = ZipFindNioUtils.findFileList(fileList, List.of("com/intellij/", "com/jetbrains/"));
+        for (Path jarPath : candidateList) {
             System.out.println(dirPath.relativize(jarPath));
         }
     }

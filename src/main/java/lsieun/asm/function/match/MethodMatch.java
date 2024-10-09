@@ -17,7 +17,7 @@ public interface MethodMatch {
         }
     }
 
-    enum Binary implements MethodMatch {
+    enum Bool implements MethodMatch {
         TRUE {
             @Override
             public boolean test(int version, String owner,

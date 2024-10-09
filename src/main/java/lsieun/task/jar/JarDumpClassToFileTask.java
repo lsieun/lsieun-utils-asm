@@ -16,7 +16,7 @@ public class JarDumpClassToFileTask {
     public static void dumpOrigin(Path jarPath,
                                   @MethodParamExample({"com/abc/Xyz.class"}) String entry,
                                   Path targetDirPath) throws IOException {
-        byte[] bytes = ZipContentNioUtils.readEntry(jarPath, entry);
+        byte[] bytes = ZipContentNioUtils.readEntryBytes(jarPath, entry);
         Path filepath = targetDirPath.resolve(entry);
         FileContentUtils.writeBytes(filepath, bytes);
     }
@@ -39,7 +39,7 @@ public class JarDumpClassToFileTask {
                                             MethodMatch methodMatch,
                                             Set<MethodBodyInfoType> options,
                                             Path targetDirPath) throws IOException {
-        byte[] bytes = ZipContentNioUtils.readEntry(jarPath, entry);
+        byte[] bytes = ZipContentNioUtils.readEntryBytes(jarPath, entry);
         byte[] newBytes = ClassFileModifyUtils.printMethodInfo(bytes, methodMatch, options);
         Path filepath = targetDirPath.resolve(entry);
         FileContentUtils.writeBytes(filepath, newBytes);
