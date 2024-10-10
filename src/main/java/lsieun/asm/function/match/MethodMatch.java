@@ -1,5 +1,7 @@
 package lsieun.asm.function.match;
 
+import org.objectweb.asm.Type;
+
 @FunctionalInterface
 public interface MethodMatch {
     boolean test(int version, String owner,
@@ -36,51 +38,86 @@ public interface MethodMatch {
         };
     }
 
-    class And implements MethodMatch {
-        private final MethodMatch[] matches;
+//    class And implements MethodMatch {
+//        private final MethodMatch[] matches;
+//
+//        private And(final MethodMatch... matches) {
+//            this.matches = matches;
+//        }
+//
+//        @Override
+//        public boolean test(int version, String owner,
+//                            int methodAccess, String methodName, String methodDesc,
+//                            String signature, String[] exceptions) {
+//            for (MethodMatch match : matches) {
+//                if (!match.test(version, owner, methodAccess, methodName, methodDesc, signature, exceptions)) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+//
+//        public static And of(final MethodMatch... matches) {
+//            return new And(matches);
+//        }
+//    }
 
-        private And(final MethodMatch... matches) {
-            this.matches = matches;
-        }
+//    class Or implements MethodMatch {
+//        private final MethodMatch[] matches;
+//
+//        private Or(final MethodMatch... matches) {
+//            this.matches = matches;
+//        }
+//
+//        @Override
+//        public boolean test(int version, String owner,
+//                            int methodAccess, String methodName, String methodDesc,
+//                            String signature, String[] exceptions) {
+//            for (MethodMatch match : matches) {
+//                if (match.test(version, owner, methodAccess, methodName, methodDesc, signature, exceptions)) {
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
+//
+//        public static Or of(final MethodMatch... matches) {
+//            return new Or(matches);
+//        }
+//    }
 
-        @Override
-        public boolean test(int version, String owner,
-                            int methodAccess, String methodName, String methodDesc,
-                            String signature, String[] exceptions) {
-            for (MethodMatch match : matches) {
-                if (!match.test(version, owner, methodAccess, methodName, methodDesc, signature, exceptions)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static And of(final MethodMatch... matches) {
-            return new And(matches);
-        }
+    static MethodMatch byMethodName(String name) {
+        return byMethodName(TextMatch.equals(name));
     }
 
-    class Or implements MethodMatch {
-        private final MethodMatch[] matches;
+    static MethodMatch byMethodName(TextMatch textMatch) {
+        return (version, owner, methodAccess, methodName, methodDesc, signature, exceptions) ->
+                textMatch.test(methodName);
+    }
 
-        private Or(final MethodMatch... matches) {
-            this.matches = matches;
-        }
+    static MethodMatch byMethodNameAndDesc(String name, String desc) {
+        return (version, owner, methodAccess, methodName, methodDesc, signature, exceptions) ->
+                methodName.equals(name) && methodDesc.equals(desc);
+    }
 
-        @Override
-        public boolean test(int version, String owner,
-                            int methodAccess, String methodName, String methodDesc,
-                            String signature, String[] exceptions) {
-            for (MethodMatch match : matches) {
-                if (match.test(version, owner, methodAccess, methodName, methodDesc, signature, exceptions)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+    static MethodMatch byMethodNameAndDesc(TextMatch textMatch) {
+        return (version, owner, methodAccess, methodName, methodDesc, signature, exceptions) ->
+        {
+            String nameAndDesc = String.format("%s:%s", methodName, methodDesc);
+            return textMatch.test(nameAndDesc);
+        };
+    }
 
-        public static Or of(final MethodMatch... matches) {
-            return new Or(matches);
-        }
+    static MethodMatch byOwnerMethodNameAndDesc(String internalClassName, String name, String desc) {
+        return (version, owner, methodAccess, methodName, methodDesc, signature, exceptions) ->
+                owner.equals(internalClassName) && methodName.equals(name) && methodDesc.equals(desc);
+    }
+
+    static MethodMatch byReturnType(TypeMatch typeMatch) {
+        return (version, owner, methodAccess, methodName, methodDesc, signature, exceptions) ->
+        {
+            Type returnType = Type.getReturnType(methodDesc);
+            return typeMatch.test(returnType);
+        };
     }
 }

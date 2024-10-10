@@ -1,8 +1,7 @@
 package lsieun.asm.lookup;
 
-import lsieun.utils.archive.ZipFindNioUtils;
+import lsieun.utils.archive.ZipFindNioUtilsForMultiple;
 import lsieun.utils.ds.pair.Pair;
-import lsieun.utils.ds.pair.PairBuddy;
 import lsieun.utils.io.dir.DirNioUtils;
 import lsieun.utils.log.LogLevel;
 import lsieun.utils.log.Logger;
@@ -36,10 +35,10 @@ class LookupClassInJarTest {
                 "org.sonatype.licensing.CustomLicenseContent",
         };
 
-        List<Pair<String, Path>> pairList = ZipFindNioUtils.findPairListByClassNames(jarPathList, classArray);
-        PairBuddy.printGroupMap(pairList, Pair::first, Pair::second);
+        List<Pair<String, Path>> pairList = ZipFindNioUtilsForMultiple.findPairListByClassNames(jarPathList, classArray);
+        Pair.printGroupMap(pairList, Pair::first, Pair::second);
         System.out.println("=====================================");
 
-        PairBuddy.printCountMap(pairList, Pair::second, 2);
+        Pair.printCountMap(pairList, Pair::second, 2);
     }
 }

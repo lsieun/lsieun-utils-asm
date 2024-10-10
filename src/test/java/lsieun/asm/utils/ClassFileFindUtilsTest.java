@@ -1,6 +1,7 @@
 package lsieun.asm.utils;
 
 import lsieun.asm.function.match.InsnInvokeMatch;
+import lsieun.asm.function.match.MatchAsmUtils;
 import lsieun.asm.function.match.MethodMatch;
 import lsieun.asm.search.SearchItem;
 import lsieun.utils.io.resource.ResourceUtils;
@@ -17,7 +18,7 @@ class ClassFileFindUtilsTest {
         byte[] bytes = ResourceUtils.readClassBytes(HelloWorldForSystemExit.class);
         List<SearchItem> itemList = ClassFileFindUtils.findMethodByInsnInvoke(
                 bytes,
-                MethodMatch.AllMethods.INSTANCE,
+                MethodMatch.Bool.TRUE,
                 InsnInvokeMatch.ByMethodInsn.SYSTEM_EXIT);
         itemList.forEach(System.out::println);
         assertNotEquals(0, itemList.size());

@@ -42,7 +42,7 @@ public class CodeSegmentUtils {
         mv.visitVarInsn(opcode, slotIndex);
 
         // prefix
-        String prefix = String.format("    %d", slotIndex); // TODO not right
+        String prefix = String.format("    slots[%02d]", slotIndex);
 
         // print
         printValueOnStack(mv, t, prefix);

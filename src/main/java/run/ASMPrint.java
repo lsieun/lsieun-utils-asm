@@ -1,11 +1,13 @@
 package run;
 
+import lsieun.utils.io.resource.ResourceUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.util.ASMifier;
 import org.objectweb.asm.util.Printer;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceClassVisitor;
+import sample.HelloWorld;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,8 +28,7 @@ public class ASMPrint {
             InputStream in = ClassLoader.getSystemResourceAsStream(classFilePath);
             byte[] bytes = readStream(in, true);
             generate(bytes, parsingOptions, asmCode);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -44,8 +45,7 @@ public class ASMPrint {
             }
             outputStream.flush();
             return outputStream.toByteArray();
-        }
-        finally {
+        } finally {
             if (close) {
                 inputStream.close();
             }
@@ -65,7 +65,10 @@ public class ASMPrint {
         cr.accept(cv, parsingOptions);
     }
 
-    public static void main(String[] args) {
-        generate("sample.HelloWorld", true);
+    public static void main(String[] args) throws IOException {
+//        generate("sample.HelloWorld", true);
+        byte[] bytes = ResourceUtils.readClassBytes(HelloWorld.class);
+        int parsingOptions = ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG;
+        generate(bytes, parsingOptions, true);
     }
 }

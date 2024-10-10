@@ -16,7 +16,7 @@ public class JarClassFileVersionTask {
     public static List<Integer> readAllClassFileVersion(Path zipPath) throws IOException {
         List<String> classList = ZipFindNioUtils.findClassList(zipPath);
         List<String> entryList = classList.stream().toList();
-        List<Pair<String, byte[]>> pairList = ZipContentNioUtils. readEntryBytesList(zipPath, entryList);
+        List<Pair<String, byte[]>> pairList = ZipContentNioUtils.readEntryBytesList(zipPath, entryList);
 
         List<Integer> list = new ArrayList<>();
         for (Pair<String, byte[]> pair : pairList) {

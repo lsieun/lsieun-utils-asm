@@ -2,9 +2,8 @@ package lsieun.task.jar;
 
 import lsieun.annotation.method.MethodParamExample;
 import lsieun.annotation.mind.blueprint.Intention;
-import lsieun.utils.archive.ZipFindNioUtils;
+import lsieun.utils.archive.ZipFindNioUtilsForMultiple;
 import lsieun.utils.ds.pair.Pair;
-import lsieun.utils.ds.pair.PairBuddy;
 import lsieun.utils.io.dir.DirNioUtils;
 import lsieun.utils.io.file.FileNioUtils;
 
@@ -36,7 +35,7 @@ public class JarCopyTask {
         if (fileList.isEmpty()) return;
 
         // path list
-        List<Path> candidateList = ZipFindNioUtils.findFileList(fileList, Arrays.asList(entryPaths));
+        List<Path> candidateList = ZipFindNioUtilsForMultiple.findFileList(fileList, Arrays.asList(entryPaths));
         if (candidateList.isEmpty()) return;
 
         // copy file
@@ -64,12 +63,12 @@ public class JarCopyTask {
         if (fileList.isEmpty()) return;
 
         // pair list
-        List<Pair<String, Path>> pairList = ZipFindNioUtils.findPairListByClassNames(fileList, classnames);
+        List<Pair<String, Path>> pairList = ZipFindNioUtilsForMultiple.findPairListByClassNames(fileList, classnames);
         if (pairList.isEmpty()) return;
 
         // map
-        Map<String, List<Path>> groupMap = PairBuddy.groupToMap(pairList, Pair::first, Pair::second);
-        Map<Path, Long> countMap = PairBuddy.countToMap(pairList, Pair::second);
+        Map<String, List<Path>> groupMap = Pair.groupToMap(pairList, Pair::first, Pair::second);
+        Map<Path, Long> countMap = Pair.countToMap(pairList, Pair::second);
 
         // one to one
         List<Pair<String, Path>> one2OnePairList = one2oneList(groupMap, countMap);

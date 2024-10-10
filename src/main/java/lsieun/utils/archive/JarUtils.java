@@ -143,7 +143,7 @@ public class JarUtils {
                 Files.copy(externalTxtFile, pathInZipfile, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException ex) {
-             ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
 

@@ -1,8 +1,6 @@
 package sample;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 public class HelloWorld {
     public void test() throws Exception {

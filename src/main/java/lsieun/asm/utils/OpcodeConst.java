@@ -1,16 +1,24 @@
 package lsieun.asm.utils;
 
 public class OpcodeConst {
-    /** Illegal opcode. */
-    public static final short  UNDEFINED      = -1;
+    /**
+     * Illegal opcode.
+     */
+    public static final short UNDEFINED = -1;
 
-    /** Illegal opcode. */
-    public static final short  UNPREDICTABLE  = -2;
+    /**
+     * Illegal opcode.
+     */
+    public static final short UNPREDICTABLE = -2;
 
-    /** Illegal opcode. */
-    public static final short  RESERVED       = -3;
+    /**
+     * Illegal opcode.
+     */
+    public static final short RESERVED = -3;
 
-    /** Mnemonic for an illegal opcode. */
+    /**
+     * Mnemonic for an illegal opcode.
+     */
     public static final String ILLEGAL_OPCODE = "<illegal opcode>";
 
     /**
@@ -137,7 +145,6 @@ public class OpcodeConst {
     };
 
     /**
-     *
      * @param index
      * @return Number of byte code operands
      */

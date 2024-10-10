@@ -4,6 +4,5 @@ public enum ByteCodeElementType {
     TYPE,
     FIELD,
     METHOD,
-    INSN
-    ;
+    INSN;
 }

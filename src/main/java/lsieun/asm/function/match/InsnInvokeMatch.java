@@ -4,10 +4,9 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
-/**
- * @see InsnInvokeMatchBuddy
- */
+@FunctionalInterface
 public interface InsnInvokeMatch {
     boolean test(int opcode, String owner, String name, String descriptor);
 
@@ -26,49 +25,49 @@ public interface InsnInvokeMatch {
         };
     }
 
-    class And implements InsnInvokeMatch {
-        private final InsnInvokeMatch[] matches;
+//    class And implements InsnInvokeMatch {
+//        private final InsnInvokeMatch[] matches;
+//
+//        private And(InsnInvokeMatch... matches) {
+//            this.matches = matches;
+//        }
+//
+//        @Override
+//        public boolean test(int opcode, String owner, String name, String descriptor) {
+//            for (InsnInvokeMatch match : matches) {
+//                if (!match.test(opcode, owner, name, descriptor)) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+//
+//        public static And of(InsnInvokeMatch... matches) {
+//            return new And(matches);
+//        }
+//    }
 
-        private And(InsnInvokeMatch... matches) {
-            this.matches = matches;
-        }
-
-        @Override
-        public boolean test(int opcode, String owner, String name, String descriptor) {
-            for (InsnInvokeMatch match : matches) {
-                if (!match.test(opcode, owner, name, descriptor)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static And of(InsnInvokeMatch... matches) {
-            return new And(matches);
-        }
-    }
-
-    class Or implements InsnInvokeMatch {
-        private final InsnInvokeMatch[] matches;
-
-        private Or(InsnInvokeMatch... matches) {
-            this.matches = matches;
-        }
-
-        @Override
-        public boolean test(int opcode, String owner, String name, String descriptor) {
-            for (InsnInvokeMatch match : matches) {
-                if (match.test(opcode, owner, name, descriptor)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static Or of(InsnInvokeMatch... matches) {
-            return new Or(matches);
-        }
-    }
+//    class Or implements InsnInvokeMatch {
+//        private final InsnInvokeMatch[] matches;
+//
+//        private Or(InsnInvokeMatch... matches) {
+//            this.matches = matches;
+//        }
+//
+//        @Override
+//        public boolean test(int opcode, String owner, String name, String descriptor) {
+//            for (InsnInvokeMatch match : matches) {
+//                if (match.test(opcode, owner, name, descriptor)) {
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
+//
+//        public static Or of(InsnInvokeMatch... matches) {
+//            return new Or(matches);
+//        }
+//    }
 
     enum ByMethodInsn implements InsnInvokeMatch {
         SYSTEM_EXIT {
@@ -101,5 +100,30 @@ public interface InsnInvokeMatch {
             }
         },
         ;
+    }
+
+    static InsnInvokeMatch by(String methodName) {
+        InsnInvokeMatch match = (opcode, owner, name, descriptor) -> Objects.equals(methodName, name);
+        return match;
+    }
+
+    static InsnInvokeMatch byName(TextMatch textMatch) {
+        InsnInvokeMatch match = (opcode, owner, name, descriptor) -> textMatch.test(name);
+        return match;
+    }
+
+    static InsnInvokeMatch byNameAndDesc(TextMatch textMatch) {
+        InsnInvokeMatch match = (opcode, owner, name, descriptor) -> {
+            String nameAndDesc = String.format("%s:%s", name, descriptor);
+            return textMatch.test(nameAndDesc);
+        };
+        return match;
+    }
+
+    static InsnInvokeMatch byReturnType(TypeMatch typeMatch) {
+        return (opcode, owner, name, descriptor) -> {
+            Type returnType = Type.getReturnType(descriptor);
+            return typeMatch.test(returnType);
+        };
     }
 }

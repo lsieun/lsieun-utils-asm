@@ -18,6 +18,12 @@ import java.util.Optional;
 public class ResourceUtils {
     private static final Logger logger = LoggerFactory.getLogger(ResourceUtils.class);
 
+    public static Path readFilePath(Class<?> clazz) {
+        String typeName = clazz.getTypeName();
+        String relativePath = typeName.replace('.', '/') + ".class";
+        return readFilePath(relativePath);
+    }
+
     public static Path readFilePath(String filepath) {
         ResourceStrategy[] values = ResourceStrategy.values();
         int length = values.length;

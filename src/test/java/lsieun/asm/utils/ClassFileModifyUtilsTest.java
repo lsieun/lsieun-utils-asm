@@ -3,17 +3,13 @@ package lsieun.asm.utils;
 import lsieun.asm.function.consumer.InsnInvokeConsumer;
 import lsieun.asm.function.match.InsnInvokeMatch;
 import lsieun.asm.function.match.MethodMatch;
-import lsieun.asm.function.match.MethodMatchBuddy;
-import lsieun.asm.function.match.TextMatchBuddy;
 import lsieun.utils.io.file.FileContentUtils;
 import lsieun.utils.io.resource.ResourceUtils;
+import lsieun.asm.function.match.TextMatch;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ClassFileModifyUtilsTest {
     @Test
@@ -21,8 +17,8 @@ class ClassFileModifyUtilsTest {
         String relativePath = "sample/HelloWorld.class";
         Path path = ResourceUtils.readFilePath(relativePath);
         byte[] bytes1 = FileContentUtils.readBytes(path);
-        MethodMatch methodMatch = MethodMatchBuddy.byName(
-                TextMatchBuddy.equals("test")
+        MethodMatch methodMatch = MethodMatch.byMethodName(
+                TextMatch.equals("test")
         );
         InsnInvokeMatch insnInvokeMatch = InsnInvokeMatch.ByReturn.METHOD;
         InsnInvokeConsumer insnInvokeConsumer = InsnInvokeConsumer.ThreePhase.builder()

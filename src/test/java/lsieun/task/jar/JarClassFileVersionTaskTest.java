@@ -1,15 +1,12 @@
 package lsieun.task.jar;
 
 import lsieun.utils.ds.pair.Pair;
-import lsieun.utils.ds.pair.PairBuddy;
 import lsieun.utils.io.dir.DirNioUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class JarClassFileVersionTaskTest {
     @Test
@@ -24,7 +21,7 @@ class JarClassFileVersionTaskTest {
         Path dirPath = Path.of("D:\\service\\nexus-3.70.1-02\\system");
         List<Path> jarPathList = DirNioUtils.findFileListInDirByExt(dirPath, ".jar");
         List<Pair<Path, Integer>> pairList = JarClassFileVersionTask.readAllClassFileVersionInDir(jarPathList);
-        PairBuddy.printCountMap(pairList, Pair::second, 0);
-        PairBuddy.printGroupMap(pairList, Pair::second, Pair::first);
+        Pair.printCountMap(pairList, Pair::second, 0);
+        Pair.printGroupMap(pairList, Pair::second, Pair::first);
     }
 }

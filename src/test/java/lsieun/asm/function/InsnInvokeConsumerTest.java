@@ -1,9 +1,9 @@
 package lsieun.asm.function;
 
 import lsieun.asm.function.consumer.InsnInvokeConsumer;
-import lsieun.asm.function.match.InsnInvokeMatchBuddy;
+import lsieun.asm.function.match.InsnInvokeMatch;
 import lsieun.asm.function.match.MethodMatch;
-import lsieun.asm.function.match.TypeMatchBuddy;
+import lsieun.asm.function.match.TypeMatch;
 import lsieun.asm.utils.ClassFileModifyUtils;
 import lsieun.asm.utils.TypeNameUtils;
 import lsieun.utils.io.file.FileContentUtils;
@@ -23,12 +23,12 @@ class InsnInvokeConsumerTest {
         Class<?> clazz = HelloWorldForPop.class;
         byte[] bytes = ResourceUtils.readClassBytes(clazz);
         byte[] newBytes = ClassFileModifyUtils.patchInsnInvoke(bytes,
-                MethodMatch.AllMethods.INSTANCE,
-                InsnInvokeMatchBuddy.byReturnType(TypeMatchBuddy.byType(Void.class)),
+                MethodMatch.Bool.TRUE,
+                InsnInvokeMatch.byReturnType(TypeMatch.byType(void.class)),
                 InsnInvokeConsumer.Common.POP_FROM_STACK
         );
         Type t = Type.getType(clazz);
-        Path path = Path.of(".", "target", TypeNameUtils.toJarEntryName(t));
+        Path path = Path.of(".", "target", "classes", TypeNameUtils.toJarEntryName(t));
         FileContentUtils.writeBytes(path, newBytes);
     }
 
