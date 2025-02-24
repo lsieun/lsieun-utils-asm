@@ -3,6 +3,8 @@ package sample;
 import java.lang.reflect.Constructor;
 
 public class HelloWorld {
+    public static final int VAL = 7;
+
     public void test() throws Exception {
         Class<?> clazz = GoodChild.class;
         Constructor<?> constructor = clazz.getConstructor();

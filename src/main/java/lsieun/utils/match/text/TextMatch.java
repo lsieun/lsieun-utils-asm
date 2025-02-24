@@ -1,8 +1,7 @@
-package lsieun.asm.function.match;
+package lsieun.utils.match.text;
 
 import lsieun.utils.match.MatchDirection;
 import lsieun.utils.match.array.ArrayMatchForMany2One;
-import lsieun.utils.match.text.TextMatchForOne2One;
 
 import java.lang.invoke.MethodHandles;
 
